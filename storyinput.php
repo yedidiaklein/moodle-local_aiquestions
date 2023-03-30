@@ -63,7 +63,9 @@ class storyinput_form extends moodleform {
     public function definition() {
         global $courseid;
         $mform = $this->_form;
-        $mform->addElement('textarea', 'story', get_string('story', 'local_aiquestions'), 'wrap="virtual" rows="10" cols="50"');
+        // This model's maximum context length is 4097 tokens. We limit the story to 4096 tokens.
+        $mform->addElement('textarea', 'story', get_string('story', 'local_aiquestions'),
+            'wrap="virtual" maxlength="4096" rows="10" cols="50"');
         $mform->setType('story', PARAM_RAW);
         $mform->setDefault('story', '' ); // Default value.
 
