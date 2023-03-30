@@ -128,7 +128,8 @@ if ($mform->is_cancelled()) {
             // Create the questions, return an array of objetcs of the created questions.
             $created = local_aiquestions_create_questions($courseid, $questions->text, $numofquestions);
             foreach ($created as $question) {
-                echo "<p>" . get_string('createdquestionwithid', 'local_aiquestions') . " : " . $question->id . "</p>";
+                echo "<p>" . get_string('createdquestionwithid', 'local_aiquestions') . " : " . $question->id . "<br>";
+                echo $question->name . "</p>";
             }
         }
         $i++;
