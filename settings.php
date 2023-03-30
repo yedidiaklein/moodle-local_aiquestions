@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 if ($hassiteconfig) {
     $settings = new admin_settingpage('local_aiquestions_settings', new lang_string('pluginname', 'local_aiquestions'));
 
-    $settings->add( new admin_setting_configtext(
+    $settings->add( new admin_setting_configpasswordunmask(
         'local_aiquestions/key',
         get_string('openaikey', 'local_aiquestions'),
         get_string('openaikeydesc', 'local_aiquestions'),
