@@ -23,38 +23,44 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Add the AI Questions menu to the course administration menu.
+ *
+ * @param settings_navigation $settingsnav
+ * @param context $context
+ */
 function local_aiquestions_extend_settings_navigation($settingsnav, $context) {
     global $CFG, $PAGE, $USER;
 
-    if ($settingnode = $settingsnav->find('courseadmin', navigation_node::TYPE_COURSE)) {
+    // Add the AI Questions menu to the course administration menu only if the user has the permission to add questions.
+    if (has_capability('moodle/question:add', $context)) {
 
-        // TODO : Check permissions.
+        if ($settingnode = $settingsnav->find('courseadmin', navigation_node::TYPE_COURSE)) {
+            $strfather = get_string('aiquestions', 'local_aiquestions');
+            $fathernode = navigation_node::create(
+                $strfather,
+                null,
+                navigation_node::NODETYPE_BRANCH,
+                'local_aiquestions_father',
+                'local_aiquestions_father'
+            );
 
-        $strfather = get_string('aiquestions', 'local_aiquestions');
-        $fathernode = navigation_node::create(
-            $strfather,
-            null,
-            navigation_node::NODETYPE_BRANCH,
-            'local_aiquestions_father',
-            'local_aiquestions_father'
-        );
+            $settingnode->add_node($fathernode);
+            $strlist = get_string('story', 'local_aiquestions');
+            $url = new moodle_url('/local/aiquestions/storyinput.php', array('courseid' => $PAGE->course->id));
+            $listnode = navigation_node::create(
+                $strlist,
+                $url,
+                navigation_node::NODETYPE_LEAF,
+                'local_aiquestions_storyinput',
+                'local_aiquestions_storyinput',
+                new pix_icon('f/avi-24', $strlist)
+            );
 
-        $settingnode->add_node($fathernode);
-        $strlist = get_string('story', 'local_aiquestions');
-        $url = new moodle_url('/local/aiquestions/storyinput.php', array('courseid' => $PAGE->course->id));
-        $listnode = navigation_node::create(
-            $strlist,
-            $url,
-            navigation_node::NODETYPE_LEAF,
-            'local_aiquestions_storyinput',
-            'local_aiquestions_storyinput',
-            new pix_icon('f/avi-24', $strlist)
-        );
-
-        if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
-            $listnode->make_active();
+            if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
+                $listnode->make_active();
+            }
+            $fathernode->add_node($listnode);
         }
-        $fathernode->add_node($listnode);
     }
 }

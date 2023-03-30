@@ -25,16 +25,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-function local_aiquestions_extend_navigation_course($navigation, $course, $context) {
-    global $CFG, $PAGE, $USER;
-    if (has_capability('moodle/course:manageactivities', $context)) {
-        $url = new moodle_url('/local/aiquestions/index.php', array('courseid' => $course->id));
-        $navigation->add(get_string('pluginname', 'local_aiquestions'), $url,
-        navigation_node::TYPE_SETTING, null, null, new pix_icon('i/settings', ''));
-    }
-}
-
 // Get the questions from the API.
+/**
+ * @param $courseid int course id
+ * @param $story string text of the story
+ * @param $numofquestions int number of questions to generate
+ * @param $idiot int 1 if ChatGPT is an idiot, 0 if not
+ * @return mixed
+ */
 function local_aiquestions_get_questions($courseid, $story, $numofquestions, $idiot = 1) {
 
     $explanation = "Please write $numofquestions multiple choice questionin GIFT format on the following text, ";
@@ -80,7 +78,13 @@ function local_aiquestions_get_questions($courseid, $story, $numofquestions, $id
     }
     return $questions;
 }
-
+/**
+ * Create questions from data gto from ChatGPT.
+ * @param $courseid int course id
+ * @param $gift string questions in GIFT format
+ * @param $numofquestions int number of questions to generate
+ * @return array of objects of created questions
+ */
 function local_aiquestions_create_questions($courseid, $gift, $numofquestions) {
     global $CFG, $USER, $DB;
 
@@ -93,8 +97,6 @@ function local_aiquestions_create_questions($courseid, $gift, $numofquestions) {
     $coursecontext = \context_course::instance($courseid);
 
     // Use existing questions category for quiz or create the defaults.
-    // TODO : Class 'question_edit_contexts' has been renamed for the autoloader and is now deprecated.
-    // Please use 'core_question\local\bank\question_edit_contexts' instead.
     $contexts = new core_question\local\bank\question_edit_contexts($coursecontext);
     if (!$category = $DB->get_record('question_categories', ['contextid' => $coursecontext->id, 'sortorder' => 999])) {
         $category = question_make_default_categories($contexts->all());
@@ -132,8 +134,8 @@ function local_aiquestions_create_questions($courseid, $gift, $numofquestions) {
     }
 }
 /**
- * @param $value
- * @return mixed
+ * @param $value string json to escape
+ * @return string escaped json
  */
 function local_aiquestions_escape_json($value) {
     $escapers = array("\\", "/", "\"", "\n", "\r", "\t", "\x08", "\x0c");
@@ -142,7 +144,11 @@ function local_aiquestions_escape_json($value) {
     return $result;
 }
 
-// Check if the gift format is valid.
+/**
+ * Check if the gift format is valid.
+ * @param $gift string questions in GIFT format
+ * @return bool true if valid, false if not
+ */
 function local_aiquestions_check_gift($gift) {
     $questions = explode("\n\n", $gift);
 

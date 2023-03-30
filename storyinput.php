@@ -29,6 +29,10 @@ defined('MOODLE_INTERNAL') || die();
 // Get course id for creating the questions in it's bank.
 $courseid = optional_param('courseid', 0, PARAM_INT);
 
+if ($courseid == 0) {
+    redirect(new moodle_url('/local/aiquestions/index.php'));
+}
+
 require_login($courseid);
 
 // Check if the user has the capability to create questions.
@@ -49,8 +53,13 @@ $PAGE->navbar->add(get_string('story', 'local_aiquestions'),
 $PAGE->requires->js_call_amd('local_aiquestions/loading');
 
 echo $OUTPUT->header();
-
+/*
+ * Form to get the story from the user.
+ */
 class storyinput_form extends moodleform {
+    /**
+     * Defines forms elements
+     */
     public function definition() {
         global $courseid;
         $mform = $this->_form;
@@ -77,6 +86,13 @@ class storyinput_form extends moodleform {
                                      style="display: none; margin:auto;">');
 
     }
+    /**
+     * Form validation
+     *
+     * @param array $data
+     * @param array $files
+     * @return array
+     */
     public function validation($data, $files) {
         return array();
     }
