@@ -128,21 +128,21 @@ if ($mform->is_cancelled()) {
             // Create the questions, return an array of objetcs of the created questions.
             $created = local_aiquestions_create_questions($courseid, $questions->text, $numofquestions);
             foreach ($created as $question) {
-                echo "<p>" . get_string('createdquestionwithid', 'local_aiquestions') . " : " . $question->id . "<br>";
+                echo "<p class='local_aiquestions_created'>" .
+                    get_string('createdquestionwithid', 'local_aiquestions') . " : " . $question->id . "<br>";
                 echo $question->name . "</p>";
             }
         }
         $i++;
     }
-    // TODO : move to template.
-    echo "<br><br>There were $i attempts to create the questions.";
-    echo "<br><br><a href='$CFG->wwwroot/course/view.php?id=$courseid'>"
-        . get_string('backtocourse' , 'local_aiquestions') . "</a>";
-    echo "<br><br><a href='$CFG->wwwroot/question/edit.php?courseid=$courseid'>"
-        . get_string('gotoquestionbank', 'local_aiquestions') . "</a>";
-    echo "<br><br><a href='$CFG->wwwroot/local/aiquestions/storyinput.php?courseid=$courseid'>"
-        . get_string('generatemore', 'local_aiquestions') . "</a>";
-
+    // Show the link to the question bank.
+    $datafortemplate = [
+        'courseid' => $courseid,
+        'attempts' => $i,
+        'wwwroot' => $CFG->wwwroot,
+    ];
+    // Load the ready template.
+    echo $OUTPUT->render_from_template('local_aiquestions/ready', $datafortemplate);
 } else {
     $mform->display();
 }

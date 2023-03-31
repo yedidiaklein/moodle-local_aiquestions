@@ -79,7 +79,7 @@ function local_aiquestions_get_questions($courseid, $story, $numofquestions, $id
     return $questions;
 }
 /**
- * Create questions from data gto from ChatGPT.
+ * Create questions from data gto from ChatGPT output.
  * @param $courseid int course id
  * @param $gift string questions in GIFT format
  * @param $numofquestions int number of questions to generate
@@ -112,6 +112,9 @@ function local_aiquestions_create_questions($courseid, $gift, $numofquestions) {
     $createdquestions = []; // Array of objects of created questions.
     foreach ($questions as $question) {
         $singlequestion = explode("\n", $question);
+        // Manipulating question text manually for question text field.
+        $questiontext = explode('{', $singlequestion[0]);
+        $questiontext = trim(str_replace('::', '', $questiontext[0]));
         $qtype = 'multichoice';
         $q = $qformat->readquestion($singlequestion);
         // Check if question is valid.
@@ -123,6 +126,8 @@ function local_aiquestions_create_questions($courseid, $gift, $numofquestions) {
         $q->modifiedby = $USER->id;
         $q->timecreated = time();
         $q->timemodified = time();
+        $q->questiontext = ['text' => "<p>" . $questiontext . "</p>"];
+        $q->questiontextformat = 1;
 
         $created = question_bank::get_qtype($qtype)->save_question($q, $q);
         $createdquestions[] = $created;
