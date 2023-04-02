@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 // Get the questions from the API.
 /**
+ * Get questions from the API.
  * @param $courseid int course id
  * @param $story string text of the story
  * @param $numofquestions int number of questions to generate
@@ -139,6 +140,7 @@ function local_aiquestions_create_questions($courseid, $gift, $numofquestions) {
     }
 }
 /**
+ * Escape json.
  * @param $value string json to escape
  * @return string escaped json
  */
