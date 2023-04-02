@@ -23,11 +23,10 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
 
-// Get the questions from the API.
 /**
  * Get questions from the API.
+ *
  * @param $courseid int course id
  * @param $story string text of the story
  * @param $numofquestions int number of questions to generate
@@ -81,6 +80,7 @@ function local_aiquestions_get_questions($courseid, $story, $numofquestions, $id
 }
 /**
  * Create questions from data gto from ChatGPT output.
+ *
  * @param $courseid int course id
  * @param $gift string questions in GIFT format
  * @param $numofquestions int number of questions to generate
@@ -141,6 +141,7 @@ function local_aiquestions_create_questions($courseid, $gift, $numofquestions) {
 }
 /**
  * Escape json.
+ *
  * @param $value string json to escape
  * @return string escaped json
  */
@@ -153,6 +154,7 @@ function local_aiquestions_escape_json($value) {
 
 /**
  * Check if the gift format is valid.
+ *
  * @param $gift string questions in GIFT format
  * @return bool true if valid, false if not
  */
