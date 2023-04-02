@@ -2,6 +2,7 @@
 
 This plugin allows you to automatically create questions on a given text using OpenAI ChatGPT.
 It requires you to have an OpenAI API Key.
+It currently support only English, but other language are on the way...
 
 ## Installing via uploaded ZIP file ##
 
