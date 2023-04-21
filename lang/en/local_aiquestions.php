@@ -30,7 +30,10 @@ $string['pluginname_desc'] = 'This plugin allows you to generate questions from 
 $string['pluginname_help'] = 'Use this plugin from the course administration menu';
 $string['privacy:metadata'] = 'AI Text to questions generator does not store any personal data';
 $string['openaikey'] = 'OpenAI API Key';
-$string['openaikeydesc'] = 'Please Type Here Your OpenAI API Key';
+$string['openaikeydesc'] = 'Please Type Here Your OpenAI API Key<br>
+You can get your API key from <a href="https://platform.openai.com/account/api-keys">https://platform.openai.com/account/api-keys</a><br>
+Select the "+ Create New Secret Key" button and copy the key to this field.<br>
+Note that you need to have an OpenAI account that include billing settings to get an API key.';
 $string['story'] = 'Story';
 $string['storydesc'] = 'Please Type Here Your Story';
 $string['numofquestions'] = 'Number of Questions';
@@ -41,3 +44,12 @@ $string['backtocourse'] = 'Back to course';
 $string['gotoquestionbank'] = 'Go to question bank';
 $string['generatemore'] = 'Generate More Questions';
 $string['createdquestionwithid'] = 'Created question with id ';
+$string['language'] = 'Language';
+$string['languagedesc'] = 'Please Select Here The Language You Want to Use For The Questions Generation<br>
+Note that some languages are less supported than others on ChatGPT.';
+$string['usepersonalprompt'] = 'Use Personal Prompt';
+$string['usepersonalpromptdesc'] = 'Please Select Here If You Want to Use Personal Prompt';
+$string['personalprompt'] = 'Personal Prompt';
+$string['personalpromptdesc'] = 'Please type here your personal prompt,
+The prompt is the explanation to ChatGPT how to generate the questions<br>
+You should include these two place holders: {{numofquestions}} and {{language}}';
