@@ -47,13 +47,13 @@ function local_aiquestions_extend_settings_navigation($settingsnav, $context) {
 
             $settingnode->add_node($fathernode);
             $strlist = get_string('story', 'local_aiquestions');
-            $url = new moodle_url('/local/aiquestions/storyinput.php', array('courseid' => $PAGE->course->id));
+            $url = new moodle_url('/local/aiquestions/story.php', array('courseid' => $PAGE->course->id));
             $listnode = navigation_node::create(
                 $strlist,
                 $url,
                 navigation_node::NODETYPE_LEAF,
-                'local_aiquestions_storyinput',
-                'local_aiquestions_storyinput',
+                'local_aiquestions_story',
+                'local_aiquestions_story',
                 new pix_icon('f/avi-24', $strlist)
             );
 

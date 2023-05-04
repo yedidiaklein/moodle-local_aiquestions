@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_aiquestions/ready
+    @template local_aiquestions/loading
 
     Template which defines the data shown when question are ready.
 
@@ -27,16 +27,25 @@
 
     Example context (json):
     {
-        "attempts": 3,
         "wwwroot": "https://moodle.example.com",
-        "courseid": 2
+        "courseid": "2",
+        "uniqid" : "1234567890",
+        "userid" : "2"
     }
 }}
 
-<p class="local_aiquestions_attempts">There were {{attempts}} attempts to create the questions.</p>
+<p class='local_aiquestions_created' id="success">
+    {{#str}}generating, local_aiquestions{{/str}}
+    <br>
+    <img src="{{wwwroot}}/local/aiquestions/pix/loading.gif" alt="Loading..." class="loading" height="60px" />
+</p>
+
+<div id="uniqid" style="display:none;">{{uniqid}}</div>
+<div id="userid" style="display:none;">{{userid}}</div>
+
 <p class="local_aiquestions_backtocourse"><a href='{{wwwroot}}/course/view.php?id={{courseid}}'>
     {{#str}}backtocourse, local_aiquestions{{/str}}</a></p>
 <p class="local_aiquestions_gotoquestionbank"><a href='{{wwwroot}}/question/edit.php?courseid={{courseid}}'>
     {{#str}}gotoquestionbank, local_aiquestions{{/str}}</a></p>
-<p class="local_aiquestions_generatemore"><a href='{{wwwroot}}/local/aiquestions/storyinput.php?courseid={{courseid}}'>
+<p class="local_aiquestions_generatemore"><a href='{{wwwroot}}/local/aiquestions/story.php?courseid={{courseid}}'>
     {{#str}}generatemore, local_aiquestions{{/str}}</a></p>

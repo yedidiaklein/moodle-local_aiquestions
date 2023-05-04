@@ -15,26 +15,32 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin administration pages are defined here.
+ * Plugin services.
  *
  * @package     local_aiquestions
- * @category    admin
+ * @category    services
  * @copyright   2023 Ruthy Salomon <ruthy.salomon@gmail.com> , Yedidia Klein <yedidia@openapp.co.il>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require(__DIR__ . '/../../config.php');
 defined('MOODLE_INTERNAL') || die();
-require_login();
 
-$PAGE->set_context(context_system::instance());
-$PAGE->set_heading(get_string('pluginname', 'local_aiquestions'));
-$PAGE->set_title(get_string('pluginname', 'local_aiquestions'));
-$PAGE->set_url('/local/aiquestions/');
-$PAGE->set_pagelayout('standard');
-$PAGE->navbar->add(get_string('pluginname', 'local_aiquestions'), new moodle_url('/local/aiquestions/'));
+// Define the web service functions of our plugin.
+$functions = [
+    // The name of your web service function.
+    'local_aiquestions_check_state' => [
+        'classname'   => 'local_aiquestions\external\check_state',
+        'description' => 'Check state of questions generation',
+        'type'        => 'read',
+        'ajax'        => true,
+    ],
+];
 
-
-echo $OUTPUT->header();
-echo $OUTPUT->render_from_template('local_aiquestions/index', []);
-echo $OUTPUT->footer();
+// Define the services and functions.
+$services = array(
+    'AI Questions Services' => array(
+            'functions' => array ('local_aiquestions_check_state'),
+            'restrictedusers' => 0,
+            'enabled' => 1,
+    )
+);

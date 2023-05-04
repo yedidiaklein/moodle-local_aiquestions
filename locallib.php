@@ -86,7 +86,7 @@ function local_aiquestions_get_questions($courseid, $story, $numofquestions, $id
  * @param $numofquestions int number of questions to generate
  * @return array of objects of created questions
  */
-function local_aiquestions_create_questions($courseid, $gift, $numofquestions) {
+function local_aiquestions_create_questions($courseid, $gift, $numofquestions, $userid) {
     global $CFG, $USER, $DB;
 
     require_once($CFG->libdir . '/questionlib.php');
@@ -123,8 +123,8 @@ function local_aiquestions_create_questions($courseid, $gift, $numofquestions) {
             return false;
         }
         $q->category = $category->id;
-        $q->createdby = $USER->id;
-        $q->modifiedby = $USER->id;
+        $q->createdby = $userid;
+        $q->modifiedby = $userid;
         $q->timecreated = time();
         $q->timemodified = time();
         $q->questiontext = ['text' => "<p>" . $questiontext . "</p>"];

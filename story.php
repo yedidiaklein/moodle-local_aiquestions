@@ -45,18 +45,19 @@ require_once(__DIR__ . '/locallib.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_heading(get_string('pluginname', 'local_aiquestions'));
 $PAGE->set_title(get_string('pluginname', 'local_aiquestions'));
-$PAGE->set_url('/local/aiquestions/storyinput.php?courseid=' . $courseid);
+$PAGE->set_url('/local/aiquestions/story.php?courseid=' . $courseid);
 $PAGE->set_pagelayout('standard');
 $PAGE->navbar->add(get_string('pluginname', 'local_aiquestions'), new moodle_url('/local/aiquestions/'));
 $PAGE->navbar->add(get_string('story', 'local_aiquestions'),
-                    new moodle_url('/local/aiquestions/storyinput.php?courseid=' . $courseid));
+                    new moodle_url('/local/aiquestions/story.php?courseid=' . $courseid));
 $PAGE->requires->js_call_amd('local_aiquestions/loading');
+$PAGE->requires->js_call_amd('local_aiquestions/state');
 
 echo $OUTPUT->header();
 /*
  * Form to get the story from the user.
  */
-class storyinput_form extends moodleform {
+class story_form extends moodleform {
     /**
      * Defines forms elements
      */
@@ -100,7 +101,7 @@ class storyinput_form extends moodleform {
     }
 }
 
-$mform = new storyinput_form();
+$mform = new story_form();
 
 if ($mform->is_cancelled()) {
     if (empty($returnurl)) {
@@ -112,37 +113,32 @@ if ($mform->is_cancelled()) {
     $story = $fromform->story;
     $numofquestions = $fromform->numofquestions;
 
-    // Try 10 times to create the questions.
-    $created = false;
-    $i = 0;
-    // Future : move i to module settings - max number of attempts.
-    while (!$created && $i < 10) {
-        $questions = local_aiquestions_get_questions($courseid, $story, $numofquestions);
-
-        // Print error message.
-        if (isset($questions->error->message)) {
-            echo "<br><p bgcolor='lightred'>" . $questions->error->message . "</p>";
-        }
-        // Check gift format.
-        if (local_aiquestions_check_gift($questions->text)) {
-            // Create the questions, return an array of objetcs of the created questions.
-            $created = local_aiquestions_create_questions($courseid, $questions->text, $numofquestions);
-            foreach ($created as $question) {
-                echo "<p class='local_aiquestions_created'>" .
-                    get_string('createdquestionwithid', 'local_aiquestions') . " : " . $question->id . "<br>";
-                echo $question->name . "</p>";
-            }
-        }
-        $i++;
+    // Call the adhoc task.
+    $error = '';
+    $success = '';
+    $task = new \local_aiquestions\task\questions();
+    if ($task) {
+        $uniqid = uniqid($USER->id, true);
+        $task->set_custom_data(['story' => $story,
+                                'numofquestions' => $numofquestions,
+                                'courseid' => $courseid,
+                                'userid' => $USER->id,
+                                'uniqid' => $uniqid ]);
+        \core\task\manager::queue_adhoc_task($task);
+        $success = get_string('tasksuccess', 'local_aiquestions');
+    } else {
+        $error = get_string('taskerror', 'local_aiquestions');
     }
     // Show the link to the question bank.
+    $i = 0;
     $datafortemplate = [
         'courseid' => $courseid,
-        'attempts' => $i,
         'wwwroot' => $CFG->wwwroot,
+        'uniqid' => $uniqid,
+        'userid' => $USER->id,
     ];
     // Load the ready template.
-    echo $OUTPUT->render_from_template('local_aiquestions/ready', $datafortemplate);
+    echo $OUTPUT->render_from_template('local_aiquestions/loading', $datafortemplate);
 } else {
     $mform->display();
 }

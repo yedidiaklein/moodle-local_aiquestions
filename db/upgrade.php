@@ -37,11 +37,29 @@ function xmldb_local_aiquestions_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager();
+    if ($oldversion < 2023043001) {
+        // Define table local_aiquestions to be created.
+        $table = new xmldb_table('local_aiquestions');
 
-    // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
-    //
-    // You will also have to create the db/install.xml file by using the XMLDB Editor.
-    // Documentation for the XMLDB Editor can be found at {@link https://docs.moodle.org/dev/XMLDB_editor}.
+        // Adding fields to table.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('course', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('user', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('gift', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('tries', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('uniqid', XMLDB_TYPE_CHAR, '40', null, null, null, null);
+        $table->add_field('success', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('datecreated', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
+        $table->add_field('datemodified', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
 
+        // Adding keys to table local_aiquestions.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for local_aiquestions.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+    }
     return true;
 }
