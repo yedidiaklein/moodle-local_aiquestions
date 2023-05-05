@@ -93,6 +93,7 @@ class questions extends \core\task\adhoc_task
             $update->id = $inserted;
             $update->tries = $i;
             $update->timemodified = time();
+            $update->success = get_string("generationfailed", "local_aiquestions", $i);
             $DB->update_record('local_aiquestions', $update);
         }
     }

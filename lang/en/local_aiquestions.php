@@ -55,3 +55,4 @@ The prompt is the explanation to ChatGPT how to generate the questions<br>
 You should include these two place holders: {{numofquestions}} and {{language}}';
 $string['tasksuccess'] = 'The question generation task was successfully created';
 $string['generating'] = 'Generating your questions...';
+$string['generationfailed'] = 'The question generation failed after {$a} tries';

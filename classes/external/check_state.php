@@ -22,8 +22,9 @@
  * @copyright   2023 Ruthy Salomon <ruthy.salomon@gmail.com> , Yedidia Klein <yedidia@openapp.co.il>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 namespace local_aiquestions\external;
+defined('MOODLE_INTERNAL') || die();
+require_once("{$CFG->libdir}/externallib.php");
 
 use external_function_parameters;
 use external_multiple_structure;
