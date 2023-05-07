@@ -53,6 +53,7 @@ class check_state extends \external_api
                 'state' => new external_value(PARAM_INT, 'State of question generation, 0 in work, 1 done'),
                 'success' => new external_value(PARAM_RAW, 'Success generation message'),
                 'tries' => new external_value(PARAM_INT, 'Number of tries'),
+                'numoftries' => new external_value(PARAM_INT, 'Number to try feneration'),
             ])
         );
     }
@@ -82,6 +83,7 @@ class check_state extends \external_api
         $state = $DB->get_record('local_aiquestions', ['user' => $userid, 'uniqid' => $uniqid]);
         $info = [];
         $info['tries'] = $state->tries;
+        $info['numoftries'] = $state->numoftries;
         if ($state->success != '') {
             $info['state'] = 1;
             $info['success'] = $state->success;

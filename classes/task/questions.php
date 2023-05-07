@@ -32,31 +32,35 @@ class questions extends \core\task\adhoc_task
     public function execute() {
         global $DB;
         require_once(__DIR__ . '/../../locallib.php');
+        // Read numoftries from settings.
+        $numoftries = get_config('local_aiquestions', 'numoftries');
+
+        // Get the data from the task.
         $data = $this->get_custom_data();
         $courseid = $data->courseid;
         $story = $data->story;
-        $numofquestions = $data->numofquestions;
         $userid = $data->userid;
         $uniqid = $data->uniqid;
+        $numofquestions = $data->numofquestions;
 
         // Create the DB entry.
         $dbrecord = new \stdClass();
         $dbrecord->course = $courseid;
-        $dbrecord->numofquestions = $numofquestions;
+        $dbrecord->numoftries = $numoftries;
         $dbrecord->user = $userid;
         $dbrecord->datecreated = time();
         $dbrecord->datemodified = time();
         $dbrecord->tries = 0;
+        $dbrecord->numoftries = $numoftries;
         $dbrecord->uniqid = $uniqid;
         $inserted = $DB->insert_record('local_aiquestions', $dbrecord);
-        // Try 10 times to create the questions.
+
         $created = false;
         $i = 0;
         $success = ''; // Success message.
         $error = ''; // Error message.
-        // Future : move i to module settings - max number of attempts.
         $update = new \stdClass();
-        while (!$created && $i < 10) {
+        while (!$created && $i < $numoftries) {
             // First update DB on tries.
             $update->id = $inserted;
             $update->tries = $i;
@@ -67,7 +71,10 @@ class questions extends \core\task\adhoc_task
             // Print error message of ChatGPT API (if there are).
             if (isset($questions->error->message)) {
                 $error .= $questions->error->message;
+                // Print error message to cron/adhoc output.
+                echo "[local_aiquestions] Error : " . $error . "\n";
             }
+
             // Check gift format.
             if (\local_aiquestions_check_gift($questions->text)) {
                 // Create the questions, return an array of objetcs of the created questions.
@@ -95,6 +102,11 @@ class questions extends \core\task\adhoc_task
             $update->timemodified = time();
             $update->success = get_string("generationfailed", "local_aiquestions", $i);
             $DB->update_record('local_aiquestions', $update);
+        }
+        // Print error message.
+        // It will be shown on cron/adhoc output (file/whatever).
+        if ($error != '') {
+            echo '[local_aiquestions adhoc_task]' . $error;
         }
     }
 }

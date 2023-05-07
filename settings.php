@@ -35,6 +35,13 @@ if ($hassiteconfig) {
         '', PARAM_TEXT, 50
     ));
 
+    $settings->add( new admin_setting_configtext(
+        'local_aiquestions/numoftries',
+        get_string('numoftriesset', 'local_aiquestions'),
+        get_string('numoftriesdesc', 'local_aiquestions'),
+        10, PARAM_INT, 10
+    ));
+
     $ADMIN->add('localplugins', $settings);
 
     // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf

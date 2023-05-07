@@ -29,8 +29,8 @@ define(['jquery', 'core/ajax', 'core/templates'], function ($, Ajax, Templates) 
     }, 20000);
 
     function checkState(intervalId) {
-        var userid = $("#userid")[0].outerText;
-        var uniqid = $("#uniqid")[0].outerText;
+        var userid = $("#local_aiquestions_userid")[0].outerText;
+        var uniqid = $("#local_aiquestions_uniqid")[0].outerText;
         data = { userid: userid, uniqid: uniqid };
         var promises = Ajax.call([{
             methodname: 'local_aiquestions_check_state',
@@ -40,13 +40,21 @@ define(['jquery', 'core/ajax', 'core/templates'], function ($, Ajax, Templates) 
             }
         }]);
         promises[0].then(function(showSuccess) {
+            // If Questions are ready, show success message.
             if (showSuccess[0].success != '') {
                 Templates.render('local_aiquestions/success', { success: showSuccess[0].success }).then(function(html) {
-                    $("#success").html(html);
+                    $("#local_aiquestions_success").html(html);
                 });
                 // Stop checking the state while questions are ready.
                 clearInterval(intervalId);
             }
+            // If Questions are not ready, show info if exists.
+            if (showSuccess[0].tries != null) {
+                Templates.render('local_aiquestions/info', { tries: showSuccess[0].tries, 
+                                                         numoftries: showSuccess[0].numoftries }).then(function(html) {
+                    $("#local_aiquestions_info").html(html);
+                });
+            }   
         });
     };
 });

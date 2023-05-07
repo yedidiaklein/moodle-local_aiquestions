@@ -35,12 +35,12 @@
  */
 function local_aiquestions_get_questions($courseid, $story, $numofquestions, $idiot = 1) {
 
-    $explanation = "Please write $numofquestions multiple choice questionin GIFT format on the following text, ";
-    $explanation .= " GIFT format must use equal sign for right answer and tilde sign for wrong answer at the begining of answers.";
+    $explanation = "Please write $numofquestions multiple choice question in GIFT format on the following text, ";
+    $explanation .= " GIFT format use equal sign for right answer and tilde sign for wrong answer at the beginning of answers.";
     $explanation .= " For example: '::Question title { =right answer ~wrong answer ~wrong answer ~wrong answer }' ";
-    $explanation .= " Please no not forget to have a blank line between questions. ";
+    $explanation .= " Please have a blank line between questions. ";
     if ($idiot == 1) {
-        $explanation .= " Please write the questions in the right format! ";
+        $explanation .= " Write the questions in the right format! ";
         $explanation .= " Do not forget any equal or tilde sign !";
     }
 

@@ -59,7 +59,16 @@ function xmldb_local_aiquestions_upgrade($oldversion) {
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
-
     }
+
+    if ($oldversion < 2023050501) {
+        // Add numoftries local_aiquestions.
+        $table = new xmldb_table('local_aiquestions');
+        $field = new xmldb_field('numoftries', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'tries');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+    }
+
     return true;
 }

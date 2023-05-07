@@ -56,3 +56,8 @@ You should include these two place holders: {{numofquestions}} and {{language}}'
 $string['tasksuccess'] = 'The question generation task was successfully created';
 $string['generating'] = 'Generating your questions...';
 $string['generationfailed'] = 'The question generation failed after {$a} tries';
+$string['generationtries'] = 'Number of tries sent to OpenAI: <b>{$a}</b>';
+$string['outof'] = 'out of';
+$string['numoftries'] = '<b>{$a}</b> number of tries';
+$string['numoftriesset'] = 'Tries';
+$string['numoftriesdesc'] = 'Please Write Here The Number of Tries You Want to Send to OpenAI';

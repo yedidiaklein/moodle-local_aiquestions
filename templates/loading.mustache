@@ -34,14 +34,15 @@
     }
 }}
 
-<p class='local_aiquestions_created' id="success">
+<p class='local_aiquestions_created' id="local_aiquestions_success">
     {{#str}}generating, local_aiquestions{{/str}}
     <br>
-    <img src="{{wwwroot}}/local/aiquestions/pix/loading.gif" alt="Loading..." class="loading" height="60px" />
+    {{#pix}}i/loading, core{{/pix}}
 </p>
+<p id="local_aiquestions_info"></p>
 
-<div id="uniqid" style="display:none;">{{uniqid}}</div>
-<div id="userid" style="display:none;">{{userid}}</div>
+<div id="local_aiquestions_uniqid" style="display:none;">{{uniqid}}</div>
+<div id="local_aiquestions_userid" style="display:none;">{{userid}}</div>
 
 <p class="local_aiquestions_backtocourse"><a href='{{wwwroot}}/course/view.php?id={{courseid}}'>
     {{#str}}backtocourse, local_aiquestions{{/str}}</a></p>

@@ -7,6 +7,7 @@
     <TABLE NAME="local_aiquestions" COMMENT="Ai Questions table">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="numoftries" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Number of tries"/>
         <FIELD NAME="user" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User who create the questions"/>
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course questions belongs to"/>
         <FIELD NAME="gift" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Generated gift questions"/>

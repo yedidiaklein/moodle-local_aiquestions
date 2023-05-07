@@ -50,7 +50,6 @@ $PAGE->set_pagelayout('standard');
 $PAGE->navbar->add(get_string('pluginname', 'local_aiquestions'), new moodle_url('/local/aiquestions/'));
 $PAGE->navbar->add(get_string('story', 'local_aiquestions'),
                     new moodle_url('/local/aiquestions/story.php?courseid=' . $courseid));
-$PAGE->requires->js_call_amd('local_aiquestions/loading');
 $PAGE->requires->js_call_amd('local_aiquestions/state');
 
 echo $OUTPUT->header();
@@ -83,11 +82,6 @@ class story_form extends moodleform {
         $buttonarray[] =& $mform->createElement('submit', 'submitbutton', get_string('generate', 'local_aiquestions'));
         $buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('cancel'));
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
-
-        $mform->addElement('html', '<img id="loading" src="pix/loading.gif"
-                                     alt="aiquestions" width="100" height="100"
-                                     style="display: none; margin:auto;">');
-
     }
     /**
      * Form validation
@@ -114,8 +108,6 @@ if ($mform->is_cancelled()) {
     $numofquestions = $fromform->numofquestions;
 
     // Call the adhoc task.
-    $error = '';
-    $success = '';
     $task = new \local_aiquestions\task\questions();
     if ($task) {
         $uniqid = uniqid($USER->id, true);
