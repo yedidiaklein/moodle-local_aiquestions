@@ -62,3 +62,4 @@ $string['numoftries'] = '<b>{$a}</b> tries';
 $string['numoftriesset'] = 'Number of Tries';
 $string['numoftriesdesc'] = 'Please Write Here The Number of Tries You Want to Send to OpenAI';
 $string['preview'] = 'Preview question in new tab';
+$string['cronoverdue'] = 'The cron task seems not to run, there will be no generation of questions';

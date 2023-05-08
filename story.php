@@ -53,49 +53,8 @@ $PAGE->navbar->add(get_string('story', 'local_aiquestions'),
 $PAGE->requires->js_call_amd('local_aiquestions/state');
 
 echo $OUTPUT->header();
-/*
- * Form to get the story from the user.
- */
-class story_form extends moodleform {
-    /**
-     * Defines forms elements
-     */
-    public function definition() {
-        global $courseid;
-        $mform = $this->_form;
-        // This model's maximum context length is 4097 tokens. We limit the story to 4096 tokens.
-        $mform->addElement('textarea', 'story', get_string('story', 'local_aiquestions'),
-            'wrap="virtual" maxlength="16384" rows="10" cols="50"');
-        $mform->setType('story', PARAM_RAW);
-        $mform->setDefault('story', '' ); // Default value.
 
-        $defaultnumofquestions = 4;
-        $select = $mform->addElement('select', 'numofquestions', get_string('numofquestions', 'local_aiquestions'),
-            array('1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9, '10' => 10));
-        $select->setSelected($defaultnumofquestions);
-        $mform->setType('numofquestions', PARAM_INT);
-
-        $mform->addElement('hidden', 'courseid', $courseid);
-        $mform->setType('courseid', PARAM_INT);
-
-        $buttonarray = array();
-        $buttonarray[] =& $mform->createElement('submit', 'submitbutton', get_string('generate', 'local_aiquestions'));
-        $buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('cancel'));
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
-    }
-    /**
-     * Form validation
-     *
-     * @param array $data
-     * @param array $files
-     * @return array
-     */
-    public function validation($data, $files) {
-        return array();
-    }
-}
-
-$mform = new story_form();
+$mform = new local_aiquestions_story_form();
 
 if ($mform->is_cancelled()) {
     if (empty($returnurl)) {
@@ -121,13 +80,21 @@ if ($mform->is_cancelled()) {
     } else {
         $error = get_string('taskerror', 'local_aiquestions');
     }
-    // Show the link to the question bank.
-    $i = 0;
+    // Show the loading page.
+    $lastcron = get_config('tool_task', 'lastcronstart');
+    $cronoverdue = ($lastcron < time() - 3600 * 24);
+    $lastcroninterval = get_config('tool_task', 'lastcroninterval');
+
+    $expectedfrequency = $CFG->expectedcronfrequency ?? MINSECS;
+    $croninfrequent = !$cronoverdue && ($lastcroninterval > ($expectedfrequency + MINSECS) ||
+                                                            $lastcron < time() - $expectedfrequency);
+
     $datafortemplate = [
         'courseid' => $courseid,
         'wwwroot' => $CFG->wwwroot,
         'uniqid' => $uniqid,
         'userid' => $USER->id,
+        'cron' => $croninfrequent,
     ];
     // Load the ready template.
     echo $OUTPUT->render_from_template('local_aiquestions/loading', $datafortemplate);

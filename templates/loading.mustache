@@ -30,10 +30,15 @@
         "wwwroot": "https://moodle.example.com",
         "courseid": "2",
         "uniqid" : "1234567890",
-        "userid" : "2"
+        "userid" : "2",
+        "cron": "0"
     }
 }}
-
+{{#cron}}
+    <div class="alert-warning">
+        {{#str}}cronoverdue, local_aiquestions{{/str}}
+    </div>
+{{/cron}}
 <p class='local_aiquestions_created' id="local_aiquestions_success">
     {{#str}}generating, local_aiquestions{{/str}}
     <br>
