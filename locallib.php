@@ -65,6 +65,7 @@ function local_aiquestions_get_questions($courseid, $story, $numofquestions, $id
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 2000);
     $result = json_decode(curl_exec($ch));
     curl_close($ch);
 
@@ -79,7 +80,7 @@ function local_aiquestions_get_questions($courseid, $story, $numofquestions, $id
     return $questions;
 }
 /**
- * Create questions from data gto from ChatGPT output.
+ * Create questions from data got from ChatGPT output.
  *
  * @param $courseid int course id
  * @param $gift string questions in GIFT format

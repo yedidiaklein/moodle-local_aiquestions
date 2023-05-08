@@ -15,9 +15,9 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_aiquestions/loading
+    @template local_aiquestions/bar
 
-    Template which defines the data shown when question are ready.
+    Template which show progress bar.
 
     Classes required for JS:
     * none
@@ -27,12 +27,21 @@
 
     Example context (json):
     {
-        "tries": "3",
-        "numoftries": "10",
         "percent": "30"
     }
 }}
-{{>local_aiquestions/bar}}
-{{#str}}generationtries, local_aiquestions, {{tries}}{{/str}}
-{{#str}}outof, local_aiquestions{{/str}}
-{{#str}}numoftries, local_aiquestions, {{numoftries}}{{/str}}
+<div style="background-color: lightgray; border-radius: 16px;">
+    <div style="color: #fff!important;
+                background-color: #2196F3;
+                border-radius: 16px;
+                padding: 0.01em 16px;
+                {{#percent}}
+                    width: {{percent}}%">
+                    {{percent}}%
+                {{/percent}}
+                {{^percent}}
+                    width: 0%">
+                    0%
+                {{/percent}}
+    </div>
+</div>

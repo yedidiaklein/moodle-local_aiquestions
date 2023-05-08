@@ -48,10 +48,17 @@ define(['jquery', 'core/ajax', 'core/templates'], function ($, Ajax, Templates) 
                 // Stop checking the state while questions are ready.
                 clearInterval(intervalId);
             }
-            // If Questions are not ready, show info if exists.
+            // Show info if exists.
             if (showSuccess[0].tries != null) {
+                // If the questions are ready, show 100%.
+                if (showSuccess[0].success != '') {
+                    var percent = 100;
+                } else {
+                    var percent = Math.round((showSuccess[0].tries / showSuccess[0].numoftries) * 100);
+                }
                 Templates.render('local_aiquestions/info', { tries: showSuccess[0].tries, 
-                                                         numoftries: showSuccess[0].numoftries }).then(function(html) {
+                                                             numoftries: showSuccess[0].numoftries,
+                                                             percent: percent }).then(function(html) {
                     $("#local_aiquestions_info").html(html);
                 });
             }   

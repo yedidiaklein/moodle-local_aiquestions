@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 class questions extends \core\task\adhoc_task
 {
     public function execute() {
-        global $DB;
+        global $DB, $CFG;
         require_once(__DIR__ . '/../../locallib.php');
         // Read numoftries from settings.
         $numoftries = get_config('local_aiquestions', 'numoftries');
@@ -56,7 +56,7 @@ class questions extends \core\task\adhoc_task
         $inserted = $DB->insert_record('local_aiquestions', $dbrecord);
 
         $created = false;
-        $i = 0;
+        $i = 1;
         $success = ''; // Success message.
         $error = ''; // Error message.
         $update = new \stdClass();
@@ -80,7 +80,10 @@ class questions extends \core\task\adhoc_task
                 // Create the questions, return an array of objetcs of the created questions.
                 $created = \local_aiquestions_create_questions($courseid, $questions->text, $numofquestions, $userid);
                 foreach ($created as $question) {
-                    $success .= get_string('createdquestionwithid', 'local_aiquestions') . " : " . $question->id . "<br>";
+                    $success .= get_string('createdquestionwithid', 'local_aiquestions') . " : ";
+                    $success .= '<a href="' . $CFG->wwwroot . '/question/bank/previewquestion/preview.php?id=' . $question->id . '"
+                                title="' . get_string('preview', 'local_aiquestions') . '" target="_blank">'
+                                . $question->id . "</a><br>";
                     $success .= $question->name . "<br>";
                 }
                 // Insert success creation info to DB.
