@@ -31,7 +31,6 @@ define(['jquery', 'core/ajax', 'core/templates'], function ($, Ajax, Templates) 
     function checkState(intervalId) {
         var userid = $("#local_aiquestions_userid")[0].outerText;
         var uniqid = $("#local_aiquestions_uniqid")[0].outerText;
-        data = { userid: userid, uniqid: uniqid };
         var promises = Ajax.call([{
             methodname: 'local_aiquestions_check_state',
             args: {

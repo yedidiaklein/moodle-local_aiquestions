@@ -74,13 +74,31 @@ class check_state extends \external_api
         $userid = $params['userid'];
         $uniqid = $params['uniqid'];
 
+        $state = $DB->get_record('local_aiquestions', ['user' => $userid, 'uniqid' => $uniqid]);
+
         // Perform security checks.
         // Allow only the user to check his own state.
         if ($USER->id != $userid) {
             throw new \moodle_exception('invaliduserid');
         }
 
-        $state = $DB->get_record('local_aiquestions', ['user' => $userid, 'uniqid' => $uniqid]);
+        // If there is not yet data in table (adhoc didn't start yet).
+        if (!$state) {
+            $info['tries'] = 0;
+            $info['numoftries'] = 0;
+            $info['state'] = 0;
+            $info['success'] = '';
+            $data[] = $info;
+            return $data;
+        }
+
+        // Check that user has capability to create questions on this course.
+        $courseid = $state->course;
+        $coursecontext = \context_course::instance($courseid);
+        if (!has_capability('moodle/question:add', $coursecontext)) {
+            throw new \moodle_exception('nopermission');
+        }
+
         $info = [];
         $info['tries'] = $state->tries;
         $info['numoftries'] = $state->numoftries;

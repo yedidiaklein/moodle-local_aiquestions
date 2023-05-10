@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin administration pages are defined here.
+ * CLI utility to test create questions.
  *
  * @package     local_aiquestions
  * @category    admin
@@ -37,6 +37,6 @@ $gift = "
     ~ 5
 }";
 
-$question = local_aiquestions_create_questions(2, $gift, 1);
+$question = local_aiquestions_create_questions(2, $gift, 1, 3);
 var_dump($question);
 

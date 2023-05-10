@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin administration pages are defined here.
+ * CLI utility to check cron state.
  *
  * @package     local_aiquestions
  * @category    admin
