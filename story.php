@@ -80,21 +80,17 @@ if ($mform->is_cancelled()) {
     } else {
         $error = get_string('taskerror', 'local_aiquestions');
     }
-    // Show the loading page.
+    // Check if the cron is overdue.
     $lastcron = get_config('tool_task', 'lastcronstart');
     $cronoverdue = ($lastcron < time() - 3600 * 24);
-    $lastcroninterval = get_config('tool_task', 'lastcroninterval');
 
-    $expectedfrequency = $CFG->expectedcronfrequency ?? MINSECS;
-    $croninfrequent = !$cronoverdue && ($lastcroninterval > ($expectedfrequency + MINSECS) ||
-                                                            $lastcron < time() - $expectedfrequency);
-
+    // Prepare the data for the template.
     $datafortemplate = [
         'courseid' => $courseid,
         'wwwroot' => $CFG->wwwroot,
         'uniqid' => $uniqid,
         'userid' => $USER->id,
-        'cron' => $croninfrequent,
+        'cron' => $cronoverdue,
     ];
     // Load the ready template.
     echo $OUTPUT->render_from_template('local_aiquestions/loading', $datafortemplate);
