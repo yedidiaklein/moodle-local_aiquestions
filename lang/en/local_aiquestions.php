@@ -62,4 +62,8 @@ $string['numoftries'] = '<b>{$a}</b> tries';
 $string['numoftriesset'] = 'Number of Tries';
 $string['numoftriesdesc'] = 'Please Write Here The Number of Tries You Want to Send to OpenAI';
 $string['preview'] = 'Preview question in new tab';
-$string['cronoverdue'] = 'The cron task seems not to run, there will be no generation of questions';
+$string['cronoverdue'] = 'The cron task seems not to run,
+questions generation rely on AdHoc Tasks that are created by the cron task, please check your cron settings.
+See <a href="https://docs.moodle.org/en/Cron#Setting_up_cron_on_your_system">
+https://docs.moodle.org/en/Cron#Setting_up_cron_on_your_system
+</a> for more information.';
