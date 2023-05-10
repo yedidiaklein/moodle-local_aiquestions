@@ -16,15 +16,15 @@
 /**
  * Code for checking questions generation state.
  *
- * @package     local_aiquestions
+ * @package
  * @category    admin
  * @copyright   2023 Ruthy Salomon <ruthy.salomon@gmail.com> , Yedidia Klein <yedidia@openapp.co.il>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['jquery', 'core/ajax', 'core/templates'], function ($, Ajax, Templates) {
+define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
     // Load the state of the questions generation every 20 seconds.
-    var intervalId = setInterval(function () {
+    var intervalId = setInterval(function() {
         checkState(intervalId);
     }, 20000);
 
@@ -48,19 +48,19 @@ define(['jquery', 'core/ajax', 'core/templates'], function ($, Ajax, Templates) 
                 clearInterval(intervalId);
             }
             // Show info if exists.
-            if (showSuccess[0].tries != null) {
+            if (showSuccess[0].tries !== null) {
                 // If the questions are ready, show 100%.
                 if (showSuccess[0].success != '') {
                     var percent = 100;
                 } else {
                     var percent = Math.round((showSuccess[0].tries / showSuccess[0].numoftries) * 100);
                 }
-                Templates.render('local_aiquestions/info', { tries: showSuccess[0].tries, 
+                Templates.render('local_aiquestions/info', { tries: showSuccess[0].tries,
                                                              numoftries: showSuccess[0].numoftries,
                                                              percent: percent }).then(function(html) {
                     $("#local_aiquestions_info").html(html);
                 });
-            }   
+            }
         });
-    };
+    }
 });

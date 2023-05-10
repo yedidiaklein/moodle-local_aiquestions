@@ -31,8 +31,7 @@ use external_multiple_structure;
 use external_single_structure;
 use external_value;
 
-class check_state extends \external_api
-{
+class check_state extends \external_api {
     /**
      * Returns description of method parameters
      * @return external_function_parameters

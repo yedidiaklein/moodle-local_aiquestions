@@ -27,8 +27,7 @@ namespace local_aiquestions\task;
 
 defined('MOODLE_INTERNAL') || die();
 
-class questions extends \core\task\adhoc_task
-{
+class questions extends \core\task\adhoc_task {
     public function execute() {
         global $DB, $CFG;
         require_once(__DIR__ . '/../../locallib.php');
