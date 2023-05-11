@@ -59,6 +59,7 @@ function xmldb_local_aiquestions_upgrade($oldversion) {
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
+        upgrade_plugin_savepoint(true, 2023043001, 'local', 'aiquestions');
     }
 
     if ($oldversion < 2023050501) {
@@ -68,6 +69,7 @@ function xmldb_local_aiquestions_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        upgrade_plugin_savepoint(true, 2023050501, 'local', 'aiquestions');
     }
 
     return true;

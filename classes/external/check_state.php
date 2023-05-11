@@ -31,6 +31,12 @@ use external_multiple_structure;
 use external_single_structure;
 use external_value;
 
+/**
+ * Service for checking state of question generation.
+ *
+ * @package     local_aiquestions
+ * @category    admin
+ */
 class check_state extends \external_api {
     /**
      * Returns description of method parameters
@@ -58,7 +64,8 @@ class check_state extends \external_api {
     }
     /**
      * Check state
-     * @param int $userid string $uniqid
+     * @param int $userid string
+     * @param int $uniqid string
      * @return array of state and success message
      */
     public static function execute($userid, $uniqid) {

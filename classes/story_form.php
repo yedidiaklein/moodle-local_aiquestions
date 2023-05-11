@@ -26,8 +26,11 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/formslib.php');
 
-/*
+/**
  * Form to get the story from the user.
+ *
+ * @package     local_aiquestions
+ * @category    admin
  */
 class local_aiquestions_story_form extends moodleform {
     /**

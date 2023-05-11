@@ -27,7 +27,18 @@ namespace local_aiquestions\task;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * The question generator adhoc task.
+ *
+ * @package     local_aiquestions
+ * @category    admin
+ */
 class questions extends \core\task\adhoc_task {
+    /**
+     * Execute the task.
+     *
+     * @return void
+     */
     public function execute() {
         global $DB, $CFG;
         require_once(__DIR__ . '/../../locallib.php');

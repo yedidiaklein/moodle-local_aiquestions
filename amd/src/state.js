@@ -28,6 +28,13 @@ define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
         checkState(intervalId);
     }, 20000);
 
+    /**
+     * Check the state of the questions generation.
+     * @param {int} intervalId The interval id.
+     * @return {void}
+     * @example
+     *  checkState(intervalId);
+     */
     function checkState(intervalId) {
         var userid = $("#local_aiquestions_userid")[0].outerText;
         var uniqid = $("#local_aiquestions_uniqid")[0].outerText;

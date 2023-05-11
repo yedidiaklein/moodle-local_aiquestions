@@ -31,7 +31,7 @@
  * @param $story string text of the story
  * @param $numofquestions int number of questions to generate
  * @param $idiot int 1 if ChatGPT is an idiot, 0 if not
- * @return mixed
+ * @return object questions object of generated questions
  */
 function local_aiquestions_get_questions($courseid, $story, $numofquestions, $idiot = 1) {
 
@@ -85,6 +85,7 @@ function local_aiquestions_get_questions($courseid, $story, $numofquestions, $id
  * @param $courseid int course id
  * @param $gift string questions in GIFT format
  * @param $numofquestions int number of questions to generate
+ * @param $userid int user id
  * @return array of objects of created questions
  */
 function local_aiquestions_create_questions($courseid, $gift, $numofquestions, $userid) {
@@ -144,7 +145,7 @@ function local_aiquestions_create_questions($courseid, $gift, $numofquestions, $
  * Escape json.
  *
  * @param $value string json to escape
- * @return string escaped json
+ * @return string result escaped json
  */
 function local_aiquestions_escape_json($value) {
     $escapers = array("\\", "/", "\"", "\n", "\r", "\t", "\x08", "\x0c");
