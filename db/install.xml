@@ -12,7 +12,7 @@
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course questions belongs to"/>
         <FIELD NAME="gift" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Generated gift questions"/>
         <FIELD NAME="tries" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Num of tries to generate questions"/>
-        <FIELD NAME="success" TYPE="text" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Success message"/>
+        <FIELD NAME="success" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Success message"/>
         <FIELD NAME="uniqid" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false" COMMENT="Uniq id of request"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
