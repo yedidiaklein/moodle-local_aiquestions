@@ -48,7 +48,7 @@ define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
         promises[0].then(function(showSuccess) {
             // If Questions are ready, show success message.
             if (showSuccess[0].success != '') {
-                Templates.render('local_aiquestions/success', { success: showSuccess[0].success }).then(function(html) {
+                Templates.render('local_aiquestions/success', {success: showSuccess[0].success}).then(function(html) {
                     $("#local_aiquestions_success").html(html);
                 });
                 // Stop checking the state while questions are ready.
@@ -62,9 +62,9 @@ define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
                 } else {
                     var percent = Math.round((showSuccess[0].tries / showSuccess[0].numoftries) * 100);
                 }
-                Templates.render('local_aiquestions/info', { tries: showSuccess[0].tries,
-                                                             numoftries: showSuccess[0].numoftries,
-                                                             percent: percent }).then(function(html) {
+                Templates.render('local_aiquestions/info', {tries: showSuccess[0].tries,
+                                                            numoftries: showSuccess[0].numoftries,
+                                                            percent: percent}).then(function(html) {
                     $("#local_aiquestions_info").html(html);
                 });
             }

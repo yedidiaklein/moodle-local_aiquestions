@@ -91,7 +91,7 @@ class check_state extends \external_api {
         // If there is not yet data in table (adhoc didn't start yet).
         if (!$state) {
             $info['tries'] = 0;
-            $info['numoftries'] = 0;
+            $info['numoftries'] = get_config('local_aiquestions', 'numoftries');
             $info['state'] = 0;
             $info['success'] = '';
             $data[] = $info;

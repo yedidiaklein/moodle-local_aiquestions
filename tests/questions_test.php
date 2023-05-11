@@ -42,7 +42,7 @@ class questions_test extends \advanced_testcase {
 
     /**
      * Test local_aiquestions_create_questions.
-     * @covers local_aiquestions_create_questions
+     * @covers \local_aiquestions_create_questions
      */
     public function test_create_questions() {
         require_once(__DIR__ . '/../locallib.php');
@@ -67,7 +67,7 @@ class questions_test extends \advanced_testcase {
 
     /**
      * Test local_aiquestions_escape_json.
-     * @covers local_aiquestions_escape_json
+     * @covers \local_aiquestions_escape_json
      */
     public function test_escape_json() {
         require_once(__DIR__ . '/../locallib.php');
@@ -79,7 +79,7 @@ class questions_test extends \advanced_testcase {
 
     /**
      * Test local_aiquestions_check_gift.
-     * @covers local_aiquestions_check_gift
+     * @covers \local_aiquestions_check_gift
      */
     public function test_check_gift() {
         require_once(__DIR__ . '/../locallib.php');
