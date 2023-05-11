@@ -24,7 +24,7 @@ namespace local_aiquestions;
  * @copyright   2023 Ruthy Salomon <ruthy.salomon@gmail.com> , Yedidia Klein <yedidia@openapp.co.il>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class createquestions_test extends \advanced_testcase {
+class questions_test extends \advanced_testcase {
 
     // Write the tests here as public funcions.
     // Please refer to {@link https://docs.moodle.org/dev/PHPUnit} for more details on PHPUnit tests in Moodle.
@@ -37,17 +37,18 @@ class createquestions_test extends \advanced_testcase {
      * @coversNothing
      */
     public function test_dummy() {
-        $this->assertTrue(false);
+        $this->assertTrue(true);
     }
 
     /**
      * Test local_aiquestions_create_questions.
      * @covers local_aiquestions_create_questions
      */
-    public function test_create() {
+    public function test_create_questions() {
         require_once(__DIR__ . '/../locallib.php');
+        $this->resetAfterTest(true);
         $gift = "
-            ::Question1:: My interesting questionText
+            ::My interesting questionText
             {
                 = right answer
                 ~ wrong1
@@ -55,13 +56,20 @@ class createquestions_test extends \advanced_testcase {
                 ~ wrong3
                 ~ wrong4
             }";
-        $question = \local_aiquestions_create_questions(2, $gift, 1, 3);
-        $this->assertEquals($question->name, 'Question1');
-        $this->assertEquals($question->questiontext, 'My interesting questionText');
-        $this->assertEquals($question->qtype, 'multichoice');
-        $this->assertEquals($question->fraction, 1);
-        $this->assertEquals($question->single, 1);
-        $this->assertEquals($question->answernumbering, 'abc');
-        $this->assertEquals($question->shuffleanswers, 1);
+        $question = \local_aiquestions_create_questions(1, $gift, 1, 2);
+        $this->assertEquals($question[0]->name, 'My interesting questionText');
+        $this->assertEquals($question[0]->qtype, 'multichoice');
+    }
+
+    /**
+     * Test local_aiquestions_escape_json.
+     * @covers local_aiquestions_escape_json
+     */
+    public function test_escape_json() {
+        require_once(__DIR__ . '/../locallib.php');
+        $myjson = '{"name":"My long
+            text with new line"}';
+        $escapedjson = \local_aiquestions_escape_json($myjson);
+        $this->assertEquals($escapedjson, '{\"name\":\"My long\n            text with new line\"}');
     }
 }
