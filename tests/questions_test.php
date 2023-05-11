@@ -56,7 +56,11 @@ class questions_test extends \advanced_testcase {
                 ~ wrong3
                 ~ wrong4
             }";
-        $question = \local_aiquestions_create_questions(1, $gift, 1, 2);
+        // Create user.
+        $user = $this->getDataGenerator()->create_user();
+        $course = $this->getDataGenerator()->create_course();
+        // Params are : courseid, gift, numofquestions, userid.
+        $question = \local_aiquestions_create_questions($course->id, $gift, 1, $user->id);
         $this->assertEquals($question[0]->name, 'My interesting questionText');
         $this->assertEquals($question[0]->qtype, 'multichoice');
     }
@@ -71,5 +75,46 @@ class questions_test extends \advanced_testcase {
             text with new line"}';
         $escapedjson = \local_aiquestions_escape_json($myjson);
         $this->assertEquals($escapedjson, '{\"name\":\"My long\n            text with new line\"}');
+    }
+
+    /**
+     * Test local_aiquestions_check_gift.
+     * @covers local_aiquestions_check_gift
+     */
+    public function test_check_gift() {
+        require_once(__DIR__ . '/../locallib.php');
+        $gift = "::My interesting questionText
+            {
+                = right answer
+                ~ wrong1
+                ~ wrong2
+                ~ wrong3
+            }
+
+            ::My interesting second questionText
+            {
+                = second right answer
+                ~ s wrong1
+                ~ s wrong2
+                ~ s wrong3
+            }";
+        $brokengift = "::My interesting questionText
+            {
+                right answer
+                ~ wrong1
+                ~ wrong2
+                ~ wrong3
+            }
+
+            ::My interesting second questionText
+            {
+                = second right answer
+                s wrong1
+                ~ s wrong2
+                ~ s wrong3
+            }";
+
+        $this->assertTrue(\local_aiquestions_check_gift($gift));
+        $this->assertFalse(\local_aiquestions_check_gift($brokengift));
     }
 }
