@@ -35,7 +35,7 @@
  */
 function local_aiquestions_get_questions($courseid, $story, $numofquestions, $idiot = 1) {
 
-    $explanation = "Please write $numofquestions multiple choice question in GIFT format on the following text, ";
+    $explanation = "Please write $numofquestions multiple choice question $language in GIFT format on the following text, ";
     $explanation .= " GIFT format use equal sign for right answer and tilde sign for wrong answer at the beginning of answers.";
     $explanation .= " For example: '::Question title { =right answer ~wrong answer ~wrong answer ~wrong answer }' ";
     $explanation .= " Please have a blank line between questions. ";
