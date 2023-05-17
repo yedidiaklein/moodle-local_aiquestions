@@ -63,6 +63,8 @@ class questions extends \core\task\adhoc_task {
         $dbrecord->tries = 0;
         $dbrecord->numoftries = $numoftries;
         $dbrecord->uniqid = $uniqid;
+        $dbrecord->gift = '';
+        $dbrecord->success = '';
         $inserted = $DB->insert_record('local_aiquestions', $dbrecord);
 
         $created = false;
