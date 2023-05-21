@@ -42,7 +42,8 @@ function local_aiquestions_get_questions($courseid, $story, $numofquestions, $id
     $language = $languages[$language];
     force_current_language($savelang);
 
-    $explanation = "Please write $numofquestions multiple choice question in $language language in GIFT format on the following text, ";
+    $explanation = "Please write $numofquestions multiple choice question in $language language";
+    $explanation .= " in GIFT format on the following text, ";
     $explanation .= " GIFT format use equal sign for right answer and tilde sign for wrong answer at the beginning of answers.";
     $explanation .= " For example: '::Question title { =right answer ~wrong answer ~wrong answer ~wrong answer }' ";
     $explanation .= " Please have a blank line between questions. ";

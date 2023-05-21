@@ -27,9 +27,38 @@
 
     Example context (json):
     {
-        "state": "1",
-        "success": "The questions were created successfully.",
-        "tries": "3"
+        "success": '[{"id": 2, "questiontext": "what is your name?"}, {"id": 3, "questiontext": "what is your age?"}]';
+        "wwwroot": "https://moodle.example.com"
     }
 }}
-<p> {{{success}}} </p>
+{{#error}}
+    <div class="local_aiquestions_error">
+        {{#str}}errornotcreated, local_aiquestions{{/str}}
+    </div>
+{{/error}}
+
+{{^error}}
+
+    {{^single}}
+        <div class="local_aiquestions_created">
+            {{#str}}createdquestionssuccess, local_aiquestions{{/str}}.
+        </div>
+    {{/single}}
+
+    {{#single}}
+        <div class="local_aiquestions_created">
+            {{#str}}createdquestionsuccess, local_aiquestions{{/str}}.
+        </div>
+    {{/single}}
+
+    {{#success}}
+        <div class="local_aiquestions_questiontext">
+            <i>{{{questiontext}}}</i>
+            <a href="{{wwwroot}}/question/bank/previewquestion/preview.php?id={{id}}"
+                title="{{#str}}preview, local_aiquestions{{/str}}" target="_blank">
+                <i class="icon fa fa-search-plus fa-fw " aria-hidden="true"></i>
+            </a>
+        </div>
+    {{/success}}
+
+{{/error}}
