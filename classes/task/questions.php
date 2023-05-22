@@ -57,9 +57,9 @@ class questions extends \core\task\adhoc_task {
         $dbrecord = new \stdClass();
         $dbrecord->course = $courseid;
         $dbrecord->numoftries = $numoftries;
-        $dbrecord->user = $userid;
-        $dbrecord->datecreated = time();
-        $dbrecord->datemodified = time();
+        $dbrecord->userid = $userid;
+        $dbrecord->timecreated = time();
+        $dbrecord->timemodified = time();
         $dbrecord->tries = 0;
         $dbrecord->numoftries = $numoftries;
         $dbrecord->uniqid = $uniqid;
