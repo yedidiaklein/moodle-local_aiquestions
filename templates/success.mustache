@@ -28,7 +28,8 @@
     Example context (json):
     {
         "success": '[{"id": 2, "questiontext": "what is your name?"}, {"id": 3, "questiontext": "what is your age?"}]';
-        "wwwroot": "https://moodle.example.com"
+        "wwwroot": "https://moodle.example.com",
+        "error": 4
     }
 }}
 {{#error}}
@@ -38,7 +39,6 @@
 {{/error}}
 
 {{^error}}
-
     {{^single}}
         <div class="local_aiquestions_created">
             {{#str}}createdquestionssuccess, local_aiquestions{{/str}}.

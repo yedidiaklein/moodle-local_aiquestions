@@ -57,9 +57,9 @@ class questions extends \core\task\adhoc_task {
         $dbrecord = new \stdClass();
         $dbrecord->course = $courseid;
         $dbrecord->numoftries = $numoftries;
-        $dbrecord->user = $userid;
-        $dbrecord->datecreated = time();
-        $dbrecord->datemodified = time();
+        $dbrecord->userid = $userid;
+        $dbrecord->timecreated = time();
+        $dbrecord->timemodified = time();
         $dbrecord->tries = 0;
         $dbrecord->numoftries = $numoftries;
         $dbrecord->uniqid = $uniqid;
@@ -113,7 +113,7 @@ class questions extends \core\task\adhoc_task {
             $update->id = $inserted;
             $update->tries = $i;
             $update->timemodified = time();
-            $update->success = json_encode(['error' => get_string("generationfailed", "local_aiquestions", $i)]);
+            $update->success = 0;
             $DB->update_record('local_aiquestions', $update);
         }
         // Print error message.

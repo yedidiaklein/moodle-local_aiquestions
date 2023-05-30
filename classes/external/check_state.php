@@ -80,7 +80,7 @@ class check_state extends \external_api {
         $userid = $params['userid'];
         $uniqid = $params['uniqid'];
 
-        $state = $DB->get_record('local_aiquestions', ['user' => $userid, 'uniqid' => $uniqid]);
+        $state = $DB->get_record('local_aiquestions', ['userid' => $userid, 'uniqid' => $uniqid]);
 
         // Perform security checks.
         // Allow only the user to check his own state.

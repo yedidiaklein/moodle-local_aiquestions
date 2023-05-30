@@ -69,4 +69,4 @@ https://docs.moodle.org/en/Cron#Setting_up_cron_on_your_system
 </a> לקבלת מידע נוסף.';
 $string['createdquestionsuccess'] = 'השאלה נוצרה בהצלחה';
 $string['createdquestionssuccess'] = 'השאלות נוצרו בהצלחה';
-$string['errornotcreated'] = 'השאלות לא נוצרו';
+$string['errornotcreated'] = 'שגיאה : השאלות לא נוצרו';

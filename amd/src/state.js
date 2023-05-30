@@ -54,8 +54,14 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/str'], function($, Ajax, 
                 } else {
                     var single = false;
                 }
+                if (showSuccess[0].success == "0") { //Error (probably question not created after n tries).
+                    var error = showSuccess[0].tries;
+                } else {
+                    var error = '';
+                }
                 Templates.render('local_aiquestions/success', { success: successmessage,
                                                                 wwwroot: M.cfg.wwwroot,
+                                                                error: error,
                                                                 single: single }).then(function(html) {
                     $("#local_aiquestions_success").html(html);
                 });
