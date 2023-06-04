@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 if ($hassiteconfig) {
     $settings = new admin_settingpage('local_aiquestions_settings', new lang_string('pluginname', 'local_aiquestions'));
 
+    // OpenAI key.
     $settings->add( new admin_setting_configpasswordunmask(
         'local_aiquestions/key',
         get_string('openaikey', 'local_aiquestions'),
@@ -35,12 +36,24 @@ if ($hassiteconfig) {
         '', PARAM_TEXT, 50
     ));
 
+    // Number of tries.
     $settings->add( new admin_setting_configtext(
         'local_aiquestions/numoftries',
         get_string('numoftriesset', 'local_aiquestions'),
         get_string('numoftriesdesc', 'local_aiquestions'),
         10, PARAM_INT, 10
     ));
+
+    // Language.
+    $languages = get_string_manager()->get_list_of_languages();
+    asort($languages);
+    $settings->add(new admin_setting_configselect(
+        'local_aiquestions/language',
+        get_string('language', 'local_aiquestions'),
+        get_string('languagedesc', 'local_aiquestions'),
+        'en', $languages
+    ));
+
 
     $ADMIN->add('localplugins', $settings);
 

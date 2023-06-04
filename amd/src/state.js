@@ -22,7 +22,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
+define(['jquery', 'core/ajax', 'core/templates', 'core/str'], function($, Ajax, Templates, str) {
     // Load the state of the questions generation every 20 seconds.
     var intervalId = setInterval(function() {
         checkState(intervalId);
@@ -48,7 +48,21 @@ define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
         promises[0].then(function(showSuccess) {
             // If Questions are ready, show success message.
             if (showSuccess[0].success != '') {
-                Templates.render('local_aiquestions/success', {success: showSuccess[0].success}).then(function(html) {
+                var successmessage = JSON.parse(showSuccess[0].success);
+                if (Object.keys(successmessage).length == 1) {
+                    var single = true;
+                } else {
+                    var single = false;
+                }
+                if (showSuccess[0].success == "0") { //Error (probably question not created after n tries).
+                    var error = showSuccess[0].tries;
+                } else {
+                    var error = '';
+                }
+                Templates.render('local_aiquestions/success', { success: successmessage,
+                                                                wwwroot: M.cfg.wwwroot,
+                                                                error: error,
+                                                                single: single }).then(function(html) {
                     $("#local_aiquestions_success").html(html);
                 });
                 // Stop checking the state while questions are ready.
@@ -62,9 +76,9 @@ define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
                 } else {
                     var percent = Math.round((showSuccess[0].tries / showSuccess[0].numoftries) * 100);
                 }
-                Templates.render('local_aiquestions/info', {tries: showSuccess[0].tries,
-                                                            numoftries: showSuccess[0].numoftries,
-                                                            percent: percent}).then(function(html) {
+                Templates.render('local_aiquestions/info', { tries: showSuccess[0].tries,
+                                                             numoftries: showSuccess[0].numoftries,
+                                                             percent: percent }).then(function(html) {
                     $("#local_aiquestions_info").html(html);
                 });
             }

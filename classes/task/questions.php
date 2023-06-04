@@ -69,7 +69,6 @@ class questions extends \core\task\adhoc_task {
 
         $created = false;
         $i = 1;
-        $success = ''; // Success message.
         $error = ''; // Error message.
         $update = new \stdClass();
         while (!$created && $i < $numoftries) {
@@ -91,18 +90,17 @@ class questions extends \core\task\adhoc_task {
             if (\local_aiquestions_check_gift($questions->text)) {
                 // Create the questions, return an array of objetcs of the created questions.
                 $created = \local_aiquestions_create_questions($courseid, $questions->text, $numofquestions, $userid);
+                $j = 0;
                 foreach ($created as $question) {
-                    $success .= get_string('createdquestionwithid', 'local_aiquestions') . " : ";
-                    $success .= '<a href="' . $CFG->wwwroot . '/question/bank/previewquestion/preview.php?id=' . $question->id . '"
-                                title="' . get_string('preview', 'local_aiquestions') . '" target="_blank">'
-                                . $question->id . "</a><br>";
-                    $success .= $question->name . "<br>";
+                    $success[$j]['id'] = $question->id;
+                    $success[$j]['questiontext'] = $question->questiontext;
+                    $j++;
                 }
                 // Insert success creation info to DB.
                 $update->id = $inserted;
                 $update->gift = $questions->text;
                 $update->tries = $i;
-                $update->success = $success;
+                $update->success = json_encode(array_values($success));
                 $update->datemodified = time();
                 $DB->update_record('local_aiquestions', $update);
             }
@@ -115,7 +113,7 @@ class questions extends \core\task\adhoc_task {
             $update->id = $inserted;
             $update->tries = $i;
             $update->timemodified = time();
-            $update->success = get_string("generationfailed", "local_aiquestions", $i);
+            $update->success = 0;
             $DB->update_record('local_aiquestions', $update);
         }
         // Print error message.

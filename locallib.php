@@ -34,8 +34,16 @@
  * @return object questions of generated questions
  */
 function local_aiquestions_get_questions($courseid, $story, $numofquestions, $idiot = 1) {
+    global $CFG;
+    $language = get_config('local_aiquestions', 'language');
+    $savelang = current_language();
+    force_current_language('en');
+    $languages = get_string_manager()->get_list_of_languages();
+    $language = $languages[$language];
+    force_current_language($savelang);
 
-    $explanation = "Please write $numofquestions multiple choice question in GIFT format on the following text, ";
+    $explanation = "Please write $numofquestions multiple choice question in $language language";
+    $explanation .= " in GIFT format on the following text, ";
     $explanation .= " GIFT format use equal sign for right answer and tilde sign for wrong answer at the beginning of answers.";
     $explanation .= " For example: '::Question title { =right answer ~wrong answer ~wrong answer ~wrong answer }' ";
     $explanation .= " Please have a blank line between questions. ";

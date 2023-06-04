@@ -72,5 +72,15 @@ function xmldb_local_aiquestions_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023050501, 'local', 'aiquestions');
     }
 
+    if ($oldversion < 2023053000) {
+        // Rename user field to userid.
+        $table = new xmldb_table('local_aiquestions');
+        $field = new xmldb_field('user', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'course');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'userid');
+        }
+        upgrade_plugin_savepoint(true, 2023053000, 'local', 'aiquestions');
+    }
+
     return true;
 }

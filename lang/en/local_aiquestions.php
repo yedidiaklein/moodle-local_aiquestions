@@ -67,3 +67,6 @@ questions generation rely on AdHoc Tasks that are created by the cron task, plea
 See <a href="https://docs.moodle.org/en/Cron#Setting_up_cron_on_your_system">
 https://docs.moodle.org/en/Cron#Setting_up_cron_on_your_system
 </a> for more information.';
+$string['createdquestionsuccess'] = 'Created question successfully';
+$string['createdquestionssuccess'] = 'Created questions successfully';
+$string['errornotcreated'] = 'Error: questions were not created';
