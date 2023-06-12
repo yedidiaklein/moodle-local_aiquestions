@@ -25,8 +25,6 @@
 
 namespace local_aiquestions\task;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * The question generator adhoc task.
  *
