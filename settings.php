@@ -41,7 +41,7 @@ if ($hassiteconfig) {
         'local_aiquestions/endpoint',
         get_string('openaiendpoint', 'local_aiquestions'),
         get_string('openaiendpointdesc', 'local_aiquestions'),
-        'https://api.openai.com/v1/chat/completions', PARAM_TEXT, 150
+        'https://api.openai.com/v1/chat/completions', PARAM_TEXT, 80
     ));
 
 
