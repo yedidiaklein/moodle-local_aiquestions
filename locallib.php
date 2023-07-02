@@ -53,7 +53,7 @@ function local_aiquestions_get_questions($courseid, $story, $numofquestions, $id
     }
 
     $key = get_config('local_aiquestions', 'key');
-    $url = 'https://api.openai.com/v1/chat/completions';
+    $url = get_config('local_aiquestions', 'endpoint');
     $authorization = "Authorization: Bearer " . $key;
 
     // Remove new lines and carriage returns.

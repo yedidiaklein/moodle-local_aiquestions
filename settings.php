@@ -36,6 +36,15 @@ if ($hassiteconfig) {
         '', PARAM_TEXT, 50
     ));
 
+    // OpenAI endpoint.
+    $settings->add( new admin_setting_configtext(
+        'local_aiquestions/endpoint',
+        get_string('openaiendpoint', 'local_aiquestions'),
+        get_string('openaiendpointdesc', 'local_aiquestions'),
+        'https://api.openai.com/v1/chat/completions', PARAM_TEXT, 150
+    ));
+
+
     // Number of tries.
     $settings->add( new admin_setting_configtext(
         'local_aiquestions/numoftries',
@@ -53,7 +62,6 @@ if ($hassiteconfig) {
         get_string('languagedesc', 'local_aiquestions'),
         'en', $languages
     ));
-
 
     $ADMIN->add('localplugins', $settings);
 
