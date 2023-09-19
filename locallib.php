@@ -33,7 +33,8 @@
  * @param bool $idiot 1 if ChatGPT is an idiot, 0 if not
  * @return object questions of generated questions
  */
-function local_aiquestions_get_questions($courseid, $story, $numofquestions, $idiot = 1) {
+function local_aiquestions_get_questions($data) {
+
     global $CFG;
     $language = get_config('local_aiquestions', 'language');
     $savelang = current_language();
@@ -42,29 +43,25 @@ function local_aiquestions_get_questions($courseid, $story, $numofquestions, $id
     $language = $languages[$language];
     force_current_language($savelang);
 
-    $explanation = "Please write $numofquestions multiple choice question in $language language";
-    $explanation .= " in GIFT format on the following text, ";
-    $explanation .= " GIFT format use equal sign for right answer and tilde sign for wrong answer at the beginning of answers.";
-    $explanation .= " For example: '::Question title { =right answer ~wrong answer ~wrong answer ~wrong answer }' ";
-    $explanation .= " Please have a blank line between questions. ";
-    if ($idiot == 1) {
-        $explanation .= " Write the questions in the right format! ";
-        $explanation .= " Do not forget any equal or tilde sign !";
-    }
+    // Build primer.
+    $primer = $data->primer;
+    $primer .= "Write $data->numofquestions questions.";
 
     $key = get_config('local_aiquestions', 'key');
-    $url = get_config('local_aiquestions', 'endpoint');
+    $url = 'https://api.openai.com/v1/chat/completions';
     $authorization = "Authorization: Bearer " . $key;
 
     // Remove new lines and carriage returns.
-    $story = str_replace("\n", " ", $story);
+    $story = str_replace("\n", " ", $data->story);
     $story = str_replace("\r", " ", $story);
 
     $data = '{
         "model": "gpt-3.5-turbo",
         "messages": [
-            {"role": "system", "content": "' . $explanation . '"},
-            {"role": "user", "content": "' . local_aiquestions_escape_json($story) . '"}
+            {"role": "system", "content": "' . $data->primer . '"},
+            {"role": "system", "name":"example_user", "content": "' . $data->instructions . '"},
+            {"role": "system", "name": "example_assistant", "content": "' . $data->example . '"},
+            {"role": "user", "content": "Now, create ' . $data->numofquestions . ' questions for me based on this topic: ' . local_aiquestions_escape_json($story) . '"}
             ]}';
 
     $ch = curl_init($url);
@@ -123,11 +120,13 @@ function local_aiquestions_create_questions($courseid, $gift, $numofquestions, $
     $createdquestions = []; // Array of objects of created questions.
     foreach ($questions as $question) {
         $singlequestion = explode("\n", $question);
+
         // Manipulating question text manually for question text field.
         $questiontext = explode('{', $singlequestion[0]);
-        $questiontext = trim(str_replace('::', '', $questiontext[0]));
+        $questiontext = trim(preg_replace('/^.*::/', '', $questiontext[0]));
         $qtype = 'multichoice';
         $q = $qformat->readquestion($singlequestion);
+        
         // Check if question is valid.
         if (!$q) {
             return false;

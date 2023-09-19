@@ -36,14 +36,37 @@ if ($hassiteconfig) {
         '', PARAM_TEXT, 50
     ));
 
-    // OpenAI endpoint.
-    $settings->add( new admin_setting_configtext(
-        'local_aiquestions/endpoint',
-        get_string('openaiendpoint', 'local_aiquestions'),
-        get_string('openaiendpointdesc', 'local_aiquestions'),
-        'https://api.openai.com/v1/chat/completions', PARAM_TEXT, 80
+    // Default primer.
+    $default = "You are a helpful teacher's assistant that creates multiple choice questions based on the topics given by the user.";
+    $settings->add( new admin_setting_configtextarea(
+        'local_aiquestions/defaultprimer',
+        get_string('defaultprimer', 'local_aiquestions'),
+        get_string('defaultprimerdesc', 'local_aiquestions'),
+        $default, PARAM_TEXT, 4000
     ));
 
+    // Default instructions.
+    $default = "Please write a multiple choice question in English language";
+    $default .= " in GIFT format on a topic I will specify to you separately";
+    $default .= " GIFT format use equal sign for right answer and tilde sign for wrong answer at the beginning of answers.";
+    $default .= " For example: '::Question title:: Question text { =right answer#feedback ~wrong answer#feedback ~wrong answer#feedback ~wrong answer#feedback }' ";
+    $default .= " Please have a blank line between questions. ";
+    $default .= " Do not include the question title in the beginning of the question text. ";
+    $settings->add( new admin_setting_configtextarea(
+        'local_aiquestions/defaultinstructions',
+        get_string('defaultinstructions', 'local_aiquestions'),
+        get_string('defaultinstructionsdesc', 'local_aiquestions'),
+        $default, PARAM_TEXT, 4000
+    ));
+
+    // Default example.
+    $default = "::Indexicality and iconicity 1:: Imagine that you are standing on a lake shore. A wind rises, creating waves on the lake surface. According to C.S. Peirce, in what way the waves signify the wind? { =The relationship is both indexical and iconical.#Correct. There is a connection of spatio-temporal contiguity between the wind and the waves, which is a determining feature of indexicality. There is also a formal resemblance between wind direction and the direction of the waves, which is a determining feature of iconicity.  ~The relationship is indexical.#Almost correct. There is a connection of spatio-temporal contiguity between the wind and the waves, which, according to Peirce, is a determining feature of indexicality. However, there is additional signification taking place as well. ~There is no sign phenomena betweem the wind and the waves, they are two separate signs.#Incorrect. The movement of the waves is determined by the wind. ~The relationship between the wind and the waves is symbolic.#Incorrect. The movement of the waves is not arbitrary, which would be the case if the relationship was symbolic. }";
+    $settings->add( new admin_setting_configtextarea(
+        'local_aiquestions/defaultexample',
+        get_string('defaultexample', 'local_aiquestions'),
+        get_string('defaultexampledesc', 'local_aiquestions'),
+        $default, PARAM_TEXT, 4000
+    ));
 
     // Number of tries.
     $settings->add( new admin_setting_configtext(
@@ -63,6 +86,11 @@ if ($hassiteconfig) {
         'en', $languages
     ));
 
+
     $ADMIN->add('localplugins', $settings);
 
+    // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
+    if ($ADMIN->fulltree) {
+        // TODO: Define actual plugin settings page and add it to the tree - {@link https://docs.moodle.org/dev/Admin_settings}.
+    }
 }

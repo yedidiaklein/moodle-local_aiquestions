@@ -70,5 +70,16 @@ https://docs.moodle.org/en/Cron#Setting_up_cron_on_your_system
 $string['createdquestionsuccess'] = 'Created question successfully';
 $string['createdquestionssuccess'] = 'Created questions successfully';
 $string['errornotcreated'] = 'Error: questions were not created';
-$string['openaiendpoint'] = 'OpenAI Endpoint';
-$string['openaiendpointdesc'] = 'Change this to your private endpoint if using Azure OpenAI';
+
+$string['primer'] = 'Primer';
+$string['instructions'] = 'Instructions';
+$string['example'] = 'Example';
+$string['story'] = 'Story';
+$string['defaultprimer'] = 'Default primer';
+$string['defaultprimerdesc'] = 'Default primer';
+$string['defaultinstructions'] = 'Default instructions';
+$string['defaultinstructionsdesc'] = 'Default instructions';
+$string['defaultexample'] = 'Default example';
+$string['defaultexampledesc'] = 'Default example';
+$string['defaultstory'] = 'Default story';
+$string['defaultstorydesc'] = 'Default story';

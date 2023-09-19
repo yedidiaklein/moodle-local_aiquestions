@@ -62,17 +62,18 @@ if ($mform->is_cancelled()) {
     } else {
         redirect($returnurl);
     }
-} else if ($fromform = $mform->get_data()) {
-    $story = $fromform->story;
-    $numofquestions = $fromform->numofquestions;
-
+} else if ($data = $mform->get_data()) {
+    
     // Call the adhoc task.
     $task = new \local_aiquestions\task\questions();
     if ($task) {
         $uniqid = uniqid($USER->id, true);
-        $task->set_custom_data(['story' => $story,
-                                'numofquestions' => $numofquestions,
-                                'courseid' => $courseid,
+        $task->set_custom_data(['primer' => $data->primer,
+                                'instructions' => $data->instructions,
+                                'example' => $data->example,
+                                'story' => $data->story,                                
+                                'numofquestions' => $data->numofquestions,
+                                'courseid' => $data->courseid,
                                 'userid' => $USER->id,
                                 'uniqid' => $uniqid ]);
         \core\task\manager::queue_adhoc_task($task);

@@ -39,18 +39,38 @@ class local_aiquestions_story_form extends moodleform {
     public function definition() {
         global $courseid;
         $mform = $this->_form;
-        // This model's maximum context length is 4097 tokens. We limit the story to 4096 tokens.
-        $mform->addElement('textarea', 'story', get_string('story', 'local_aiquestions'),
-            'wrap="virtual" maxlength="16384" rows="10" cols="50"');
-        $mform->setType('story', PARAM_RAW);
-        $mform->setDefault('story', '' ); // Default value.
 
+        // Primer.
+        $mform->addElement('textarea', 'primer', get_string('primer', 'local_aiquestions'),
+            'wrap="virtual" maxlength="16384" rows="10" cols="50"');
+        $mform->setType('primer', PARAM_RAW);
+        $mform->setDefault('primer', get_config('local_aiquestions', 'defaultprimer'));
+
+        // Instructions.
+        $mform->addElement('textarea', 'instructions', get_string('instructions', 'local_aiquestions'),
+        'wrap="virtual" maxlength="16384" rows="10" cols="50"');
+        $mform->setType('instructions', PARAM_RAW);
+        $mform->setDefault('instructions', get_config('local_aiquestions', 'defaultinstructions'));
+
+        // Example.
+        $mform->addElement('textarea', 'example', get_string('example', 'local_aiquestions'),
+        'wrap="virtual" maxlength="16384" rows="10" cols="50"');
+        $mform->setType('example', PARAM_RAW);
+        $mform->setDefault('example', get_config('local_aiquestions', 'defaultexample'));
+
+        // Story.
+        $mform->addElement('textarea', 'story', get_string('story', 'local_aiquestions'),
+            'wrap="virtual" maxlength="16384" rows="10" cols="50"'); // This model's maximum context length is 4097 tokens. We limit the story to 4096 tokens.
+        $mform->setType('story', PARAM_RAW);
+
+        // Number of questions.
         $defaultnumofquestions = 4;
         $select = $mform->addElement('select', 'numofquestions', get_string('numofquestions', 'local_aiquestions'),
             array('1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9, '10' => 10));
         $select->setSelected($defaultnumofquestions);
         $mform->setType('numofquestions', PARAM_INT);
 
+        // Courseid.
         $mform->addElement('hidden', 'courseid', $courseid);
         $mform->setType('courseid', PARAM_INT);
 
