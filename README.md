@@ -27,6 +27,14 @@ to complete the installation from the command line.
 
 ## Usage
 
+- In a course, or in the question bank of a course, you can find the new menu point **Ai Questions** in the secondary navigation.
+- Select a preset and enter the topic of your questions. You can also modify the preset data if you want.
+
+## Presets
+
+- Presets can be edited by the administrator in the module's settings.
+- Users can modify presets before creating questions.
+- Share your presets at the Moodle Docs page for this plugin: https://docs.moodle.org/402/en/AI_Text_to_questions_generator.
 
 
 ## License ##
