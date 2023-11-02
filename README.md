@@ -1,8 +1,6 @@
 # AI Text to questions generator #
 
-This plugin allows you to automatically create questions on a given text using OpenAI ChatGPT.
-It requires you to have an OpenAI API Key.
-It currently support only English, but other language are on the way...
+This plugin allows you to automatically create questions on a given text using OpenAI ChatGPT. It requires an OpenAI API Key.
 
 ## Installing via uploaded ZIP file ##
 
@@ -26,6 +24,10 @@ Alternatively, you can run
     $ php admin/cli/upgrade.php
 
 to complete the installation from the command line.
+
+## Usage
+
+
 
 ## License ##
 

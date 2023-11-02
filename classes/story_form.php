@@ -40,28 +40,10 @@ class local_aiquestions_story_form extends moodleform {
         global $courseid;
         $mform = $this->_form;
 
-        // Primer.
-        $mform->addElement('textarea', 'primer', get_string('primer', 'local_aiquestions'),
-            'wrap="virtual" maxlength="16384" rows="10" cols="50"');
-        $mform->setType('primer', PARAM_RAW);
-        $mform->setDefault('primer', get_config('local_aiquestions', 'defaultprimer'));
-
-        // Instructions.
-        $mform->addElement('textarea', 'instructions', get_string('instructions', 'local_aiquestions'),
-        'wrap="virtual" maxlength="16384" rows="10" cols="50"');
-        $mform->setType('instructions', PARAM_RAW);
-        $mform->setDefault('instructions', get_config('local_aiquestions', 'defaultinstructions'));
-
-        // Example.
-        $mform->addElement('textarea', 'example', get_string('example', 'local_aiquestions'),
-        'wrap="virtual" maxlength="16384" rows="10" cols="50"');
-        $mform->setType('example', PARAM_RAW);
-        $mform->setDefault('example', get_config('local_aiquestions', 'defaultexample'));
-
-        // Story.
-        $mform->addElement('textarea', 'story', get_string('story', 'local_aiquestions'),
-            'wrap="virtual" maxlength="16384" rows="10" cols="50"'); // This model's maximum context length is 4097 tokens. We limit the story to 4096 tokens.
-        $mform->setType('story', PARAM_RAW);
+        // Question category.
+        $contexts = [context_course::instance($courseid)];
+        $mform->addElement('questioncategory', 'category', get_string('category', 'question'),
+            array('contexts'=>$contexts));
 
         // Number of questions.
         $defaultnumofquestions = 4;
@@ -70,13 +52,56 @@ class local_aiquestions_story_form extends moodleform {
         $select->setSelected($defaultnumofquestions);
         $mform->setType('numofquestions', PARAM_INT);
 
+        // Story.
+        $mform->addElement('textarea', 'story', get_string('story', 'local_aiquestions'),
+            'wrap="virtual" maxlength="16384" rows="10" cols="50"'); // This model's maximum context length is 4097 tokens. We limit the story to 4096 tokens.
+        $mform->setType('story', PARAM_RAW);
+        $mform->addHelpButton('story', 'story', 'local_aiquestions');        
+
+        // Preset.
+        $presets = array();
+        for ($i = 1; $i <= 10; $i++) {
+            if ($presetname = get_config('local_aiquestions', 'presetname' . $i)) {
+                $presets[] = $presetname;
+            }
+        }        
+        $mform->addElement('select', 'preset', get_string('preset', 'local_aiquestions'), $presets);
+
+        // Edit preset.
+        $mform->addElement('checkbox', 'editpreset', get_string('editpreset', 'local_aiquestions'));        
+        $mform->addElement('html', get_string('shareyourprompts', 'local_aiquestions'));        
+
+        // Primer.
+        $mform->addElement('textarea', 'primer', get_string('primer', 'local_aiquestions'),
+            'wrap="virtual" maxlength="16384" rows="10" cols="50"');
+        $mform->setType('primer', PARAM_RAW);
+        $mform->setDefault('primer', get_config('local_aiquestions', 'defaultprimer'));
+        $mform->addHelpButton('primer', 'primer', 'local_aiquestions');
+        $mform->hideif('primer', 'editpreset');
+
+        // Instructions.
+        $mform->addElement('textarea', 'instructions', get_string('instructions', 'local_aiquestions'),
+        'wrap="virtual" maxlength="16384" rows="10" cols="50"');
+        $mform->setType('instructions', PARAM_RAW);
+        $mform->setDefault('instructions', get_config('local_aiquestions', 'defaultinstructions'));
+        $mform->addHelpButton('instructions', 'instructions', 'local_aiquestions');
+        $mform->hideif('instructions', 'editpreset');
+
+        // Example.
+        $mform->addElement('textarea', 'example', get_string('example', 'local_aiquestions'),
+        'wrap="virtual" maxlength="16384" rows="10" cols="50"');
+        $mform->setType('example', PARAM_RAW);
+        $mform->setDefault('example', get_config('local_aiquestions', 'defaultexample'));
+        $mform->addHelpButton('example', 'example', 'local_aiquestions');
+        $mform->hideif('example', 'editpreset');        
+
         // Courseid.
         $mform->addElement('hidden', 'courseid', $courseid);
         $mform->setType('courseid', PARAM_INT);
 
         $buttonarray = array();
         $buttonarray[] =& $mform->createElement('submit', 'submitbutton', get_string('generate', 'local_aiquestions'));
-        $buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('cancel'));
+        $buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('backtocourse', 'local_aiquestions'));
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
     }
     /**

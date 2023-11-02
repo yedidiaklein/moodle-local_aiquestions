@@ -88,12 +88,13 @@ function local_aiquestions_get_questions($data) {
  * Create questions from data got from ChatGPT output.
  *
  * @param int $courseid course id
+ * @param int $category course category
  * @param string $gift questions in GIFT format
  * @param int $numofquestions number of questions to generate
  * @param int $userid user id
  * @return array of objects of created questions
  */
-function local_aiquestions_create_questions($courseid, $gift, $numofquestions, $userid) {
+function local_aiquestions_create_questions($courseid, $category, $gift, $numofquestions, $userid) {
     global $CFG, $USER, $DB;
 
     require_once($CFG->libdir . '/questionlib.php');
@@ -104,10 +105,20 @@ function local_aiquestions_create_questions($courseid, $gift, $numofquestions, $
 
     $coursecontext = \context_course::instance($courseid);
 
+    // Get question category TODO: there is probably a better way to do this.
+    if ($category) {
+        $categoryids = explode(',',$category);
+        $categoryid = $categoryids[0];
+        $categorycontextid = $categoryids[1];
+        $category = $DB->get_record('question_categories', ['id' => $categoryid, 'contextid' => $categorycontextid]);  
+    }
+
     // Use existing questions category for quiz or create the defaults.
-    $contexts = new core_question\local\bank\question_edit_contexts($coursecontext);
-    if (!$category = $DB->get_record('question_categories', ['contextid' => $coursecontext->id, 'sortorder' => 999])) {
-        $category = question_make_default_categories($contexts->all());
+    if (!$category) {
+        $contexts = new core_question\local\bank\question_edit_contexts($coursecontext);
+        if (!$category = $DB->get_record('question_categories', ['contextid' => $coursecontext->id, 'sortorder' => 999])) {
+            $category = question_make_default_categories($contexts->all());
+        }
     }
 
     // Split questions based on blank lines.

@@ -36,38 +36,6 @@ if ($hassiteconfig) {
         '', PARAM_TEXT, 50
     ));
 
-    // Default primer.
-    $default = "You are a helpful teacher's assistant that creates multiple choice questions based on the topics given by the user.";
-    $settings->add( new admin_setting_configtextarea(
-        'local_aiquestions/defaultprimer',
-        get_string('defaultprimer', 'local_aiquestions'),
-        get_string('defaultprimerdesc', 'local_aiquestions'),
-        $default, PARAM_TEXT, 4000
-    ));
-
-    // Default instructions.
-    $default = "Please write a multiple choice question in English language";
-    $default .= " in GIFT format on a topic I will specify to you separately";
-    $default .= " GIFT format use equal sign for right answer and tilde sign for wrong answer at the beginning of answers.";
-    $default .= " For example: '::Question title:: Question text { =right answer#feedback ~wrong answer#feedback ~wrong answer#feedback ~wrong answer#feedback }' ";
-    $default .= " Please have a blank line between questions. ";
-    $default .= " Do not include the question title in the beginning of the question text. ";
-    $settings->add( new admin_setting_configtextarea(
-        'local_aiquestions/defaultinstructions',
-        get_string('defaultinstructions', 'local_aiquestions'),
-        get_string('defaultinstructionsdesc', 'local_aiquestions'),
-        $default, PARAM_TEXT, 4000
-    ));
-
-    // Default example.
-    $default = "::Indexicality and iconicity 1:: Imagine that you are standing on a lake shore. A wind rises, creating waves on the lake surface. According to C.S. Peirce, in what way the waves signify the wind? { =The relationship is both indexical and iconical.#Correct. There is a connection of spatio-temporal contiguity between the wind and the waves, which is a determining feature of indexicality. There is also a formal resemblance between wind direction and the direction of the waves, which is a determining feature of iconicity.  ~The relationship is indexical.#Almost correct. There is a connection of spatio-temporal contiguity between the wind and the waves, which, according to Peirce, is a determining feature of indexicality. However, there is additional signification taking place as well. ~There is no sign phenomena betweem the wind and the waves, they are two separate signs.#Incorrect. The movement of the waves is determined by the wind. ~The relationship between the wind and the waves is symbolic.#Incorrect. The movement of the waves is not arbitrary, which would be the case if the relationship was symbolic. }";
-    $settings->add( new admin_setting_configtextarea(
-        'local_aiquestions/defaultexample',
-        get_string('defaultexample', 'local_aiquestions'),
-        get_string('defaultexampledesc', 'local_aiquestions'),
-        $default, PARAM_TEXT, 4000
-    ));
-
     // Number of tries.
     $settings->add( new admin_setting_configtext(
         'local_aiquestions/numoftries',
@@ -76,16 +44,60 @@ if ($hassiteconfig) {
         10, PARAM_INT, 10
     ));
 
-    // Language.
-    $languages = get_string_manager()->get_list_of_languages();
-    asort($languages);
-    $settings->add(new admin_setting_configselect(
-        'local_aiquestions/language',
-        get_string('language', 'local_aiquestions'),
-        get_string('languagedesc', 'local_aiquestions'),
-        'en', $languages
+    
+    // Presets        
+    $settings->add( new admin_setting_heading(
+        'local_aiquestions/presets',
+        get_string('presets', 'local_aiquestions'),
+        get_string('presetsdesc', 'local_aiquestions') . 
+        get_string('shareyourprompts', 'local_aiquestions'),
     ));
 
+    for ($i = 1; $i <= 10; $i++) {
+
+        // Preset header.
+        $settings->add( new admin_setting_heading(
+            'local_aiquestions/preset' . $i,
+            get_string('preset', 'local_aiquestions') . " $i",
+            null
+        ));
+
+        // Preset name.
+        $settings->add( new admin_setting_configtext(
+            'local_aiquestions/presetname' . $i,
+            get_string('presetname', 'local_aiquestions'),
+            get_string('presetnamedesc', 'local_aiquestions'),
+            get_string('presetnamedefault' . $i, 'local_aiquestions'),
+        ));
+
+        // Preset primer.        
+        $settings->add( new admin_setting_configtextarea(
+            'local_aiquestions/presettprimer' . $i,
+            get_string('presetprimer', 'local_aiquestions'),
+            get_string('primer_help', 'local_aiquestions'),
+            get_string('presetprimerdefault' . $i, 'local_aiquestions'), 
+            PARAM_TEXT, 4000
+        ));
+
+        // Preset instructions.        
+        $settings->add( new admin_setting_configtextarea(
+            'local_aiquestions/presetinstructions' . $i,
+            get_string('presetinstructions', 'local_aiquestions'),
+            get_string('instructions_help', 'local_aiquestions'),
+            get_string('presetinstructionsdefault' . $i, 'local_aiquestions'), 
+            PARAM_TEXT, 4000
+        ));
+
+        // Preset example.        
+        $settings->add( new admin_setting_configtextarea(
+            'local_aiquestions/presetexample' . $i,
+            get_string('presetexample', 'local_aiquestions'),
+            get_string('example_help', 'local_aiquestions'),
+            get_string('presetexampledefault' . $i, 'local_aiquestions'), 
+            PARAM_TEXT, 4000
+        ));
+
+    }
 
     $ADMIN->add('localplugins', $settings);
 

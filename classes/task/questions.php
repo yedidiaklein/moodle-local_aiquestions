@@ -46,8 +46,9 @@ class questions extends \core\task\adhoc_task {
         $numoftries = get_config('local_aiquestions', 'numoftries');
 
         // Get the data from the task.
-        $data = $this->get_custom_data();
+        $data = $this->get_custom_data();        
         $courseid = $data->courseid;
+        $category = $data->category;
         $story = $data->story;
         $userid = $data->userid;
         $uniqid = $data->uniqid;
@@ -95,7 +96,7 @@ class questions extends \core\task\adhoc_task {
             if (\local_aiquestions_check_gift($questions->text)) {
 
                 // Create the questions, return an array of objetcs of the created questions.
-                $created = \local_aiquestions_create_questions($courseid, $questions->text, $numofquestions, $userid);
+                $created = \local_aiquestions_create_questions($courseid, $category, $questions->text, $numofquestions, $userid);
                 $j = 0;
                 foreach ($created as $question) {
                     $success[$j]['id'] = $question->id;
