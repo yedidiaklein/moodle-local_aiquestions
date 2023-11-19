@@ -27,10 +27,7 @@
 /**
  * Get questions from the API.
  *
- * @param int $courseid course id
- * @param string $story text of the story
- * @param int $numofquestions number of questions to generate
- * @param bool $idiot 1 if ChatGPT is an idiot, 0 if not
+ * @param object data data to create questions from
  * @return object questions of generated questions
  */
 function local_aiquestions_get_questions($data) {
