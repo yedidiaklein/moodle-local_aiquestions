@@ -54,13 +54,17 @@ function local_aiquestions_get_questions($data) {
     // Remove new lines and carriage returns.
     $story = str_replace("\n", " ", $data->story);
     $story = str_replace("\r", " ", $story);
+    $instructions = str_replace("\n", " ", $data->instructions);
+    $instructions = str_replace("\r", " ", $instructions);
+    $example = str_replace("\n", " ", $data->example);
+    $example = str_replace("\r", " ", $example);
 
     $data = '{
         "model": "gpt-3.5-turbo",
         "messages": [
-            {"role": "system", "content": "' . $data->primer . '"},
-            {"role": "system", "name":"example_user", "content": "' . $data->instructions . '"},
-            {"role": "system", "name": "example_assistant", "content": "' . $data->example . '"},
+            {"role": "system", "content": "' . $primer . '"},
+            {"role": "system", "name":"example_user", "content": "' . $instructions . '"},
+            {"role": "system", "name": "example_assistant", "content": "' . $example . '"},
             {"role": "user", "content": "Now, create ' . $data->numofquestions . ' questions for me based on this topic: ' . local_aiquestions_escape_json($story) . '"}
             ]}';
 

@@ -86,12 +86,7 @@ $string['errornotcreated'] = 'Error: questions were not created';
 // Preset defaults.
 $string['presetnamedefault1'] = "Multiple choice question (english)";
 $string['presetprimerdefault1'] = "You are a helpful teacher's assistant that creates multiple choice questions based on the topics given by the user.";
-$string['presetinstructionsdefault1'] = "Please write a multiple choice question in English language. 
-in GIFT format on a topic I will specify to you separately
-GIFT format use equal sign for right answer and tilde sign for wrong answer at the beginning of answers.
-For example: '::Question title:: Question text { =right answer#feedback ~wrong answer#feedback ~wrong answer#feedback ~wrong answer#feedback }'
-Please have a blank line between questions.
-Do not include the question title in the beginning of the question text.";
+$string['presetinstructionsdefault1'] = "Please write a multiple choice question in English language in GIFT format on a topic I will specify to you separately GIFT format use equal sign for right answer and tilde sign for wrong answer at the beginning of answers. For example: '::Question title:: Question text { =right answer#feedback ~wrong answer#feedback ~wrong answer#feedback ~wrong answer#feedback }' Please have a blank line between questions. Do not include the question title in the beginning of the question text.";
 $string['presetexampledefault1'] = "::Indexicality and iconicity 1:: Imagine that you are standing on a lake shore. A wind rises, creating waves on the lake surface. According to C.S. Peirce, in what way the waves signify the wind? { =The relationship is both indexical and iconical.#Correct. There is a connection of spatio-temporal contiguity between the wind and the waves, which is a determining feature of indexicality. There is also a formal resemblance between wind direction and the direction of the waves, which is a determining feature of iconicity.  ~The relationship is indexical.#Almost correct. There is a connection of spatio-temporal contiguity between the wind and the waves, which, according to Peirce, is a determining feature of indexicality. However, there is additional signification taking place as well. ~There is no sign phenomena betweem the wind and the waves, they are two separate signs.#Incorrect. The movement of the waves is determined by the wind. ~The relationship between the wind and the waves is symbolic.#Incorrect. The movement of the waves is not arbitrary, which would be the case if the relationship was symbolic. }";
 $string['presetnamedefault2'] = '';
 $string['presetprimerdefault2'] = '';

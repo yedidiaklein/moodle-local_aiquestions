@@ -63,11 +63,15 @@ if ($mform->is_cancelled()) {
     // Call the adhoc task.
     $task = new \local_aiquestions\task\questions();
     if ($task) {
-        $uniqid = uniqid($USER->id, true);
+        $uniqid = uniqid($USER->id, true);        
+        $preset = $data->preset;
+        $primer = 'primer' . $preset;
+        $instructions = 'instructions' . $preset;
+        $example = 'example' . $preset;
         $task->set_custom_data(['category' => $data->category,
-                                'primer' => $data->primer,
-                                'instructions' => $data->instructions,
-                                'example' => $data->example,
+                                'primer' => $data->$primer,
+                                'instructions' => $data->$instructions,
+                                'example' => $data->$example,
                                 'story' => $data->story,                                
                                 'numofquestions' => $data->numofquestions,
                                 'courseid' => $data->courseid,
@@ -75,6 +79,7 @@ if ($mform->is_cancelled()) {
                                 'uniqid' => $uniqid ]);
         \core\task\manager::queue_adhoc_task($task);
         $success = get_string('tasksuccess', 'local_aiquestions');
+
     } else {
         $error = get_string('taskerror', 'local_aiquestions');
     }
