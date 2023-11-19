@@ -35,13 +35,7 @@
  */
 function local_aiquestions_get_questions($data) {
 
-    global $CFG;
-    $language = get_config('local_aiquestions', 'language');
-    $savelang = current_language();
-    force_current_language('en');
-    $languages = get_string_manager()->get_list_of_languages();
-    $language = $languages[$language];
-    force_current_language($savelang);
+    global $CFG;    
 
     // Build primer.
     $primer = $data->primer;
