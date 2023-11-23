@@ -37,6 +37,8 @@ $string['openaikey'] = 'OpenAI API key';
 $string['openaikeydesc'] = 'You can get your API key from <a href="https://platform.openai.com/account/api-keys">https://platform.openai.com/account/api-keys</a><br>
 Select the "+ Create New Secret Key" button and copy the key to this field.<br>
 Note that you need to have an OpenAI account that include billing settings to get an API key.';
+$string['model'] = 'Model';
+$string['model_desc'] = 'Language model to use. <a href="https://platform.openai.com/docs/models/">More info</a>.';
 $string['presetname'] = 'Preset name';
 $string['presetnamedesc'] = 'Name that will be shown to the user';
 $string['presetprimer'] = 'Preset primer';
@@ -48,9 +50,11 @@ $string['numoftriesdesc'] = 'Number of tries to send to OpenAI';
 $string['presets'] = 'Presets';
 $string['presetsdesc'] = 'You can specify up to 10 presets, which users will be able to select in their courses. Users will still be able to edit the presets before sending them to OpenAI.';
 $string['preset'] = 'Preset';
-$string['shareyourprompts'] = '<p>You can find more prompt ideas or share yours at <a target="_blank" href="https://docs.moodle.org/402/en/AI_Text_to_questions_generator">the Moodle Docs page for this plugin</a></p>.';
+$string['shareyourprompts'] = 'You can find more prompt ideas or share yours at <a target="_blank" href="https://docs.moodle.org/402/en/AI_Text_to_questions_generator">the Moodle Docs page for this plugin</a>.';
 
 // Story form.
+$string['category'] = 'Question category';
+$string['category_help'] = 'If the category selection is empty, open the question bank for this course once.';
 $string['editpreset'] = 'Edit the preset before sending it to the AI';
 $string['primer'] = 'Primer';
 $string['primer_help'] = 'The primer is the first information to be sent to the AI, priming it for its task.';

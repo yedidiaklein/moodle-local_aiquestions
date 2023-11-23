@@ -46,7 +46,7 @@ class questions extends \core\task\adhoc_task {
         $numoftries = get_config('local_aiquestions', 'numoftries');
 
         // Get the data from the task.
-        $data = $this->get_custom_data();        
+        $data = $this->get_custom_data();
         $courseid = $data->courseid;
         $category = $data->category;
         $story = $data->story;
@@ -119,7 +119,7 @@ class questions extends \core\task\adhoc_task {
                     $update->datemodified = time();
                     $DB->update_record('local_aiquestions', $update);
                 }
-            } else {                
+            } else {
                 echo "[local_aiquestions] Error: No question text returned \n";
             }
             $i++;

@@ -44,6 +44,7 @@ class local_aiquestions_story_form extends moodleform {
         $contexts = [context_course::instance($courseid)];
         $mform->addElement('questioncategory', 'category', get_string('category', 'question'),
             array('contexts'=>$contexts));
+        $mform->addHelpButton('category', 'category', 'local_aiquestions');
 
         // Number of questions.
         $defaultnumofquestions = 4;
@@ -54,9 +55,9 @@ class local_aiquestions_story_form extends moodleform {
 
         // Story.
         $mform->addElement('textarea', 'story', get_string('story', 'local_aiquestions'),
-            'wrap="virtual" maxlength="16384" rows="10" cols="50"'); // This model's maximum context length is 4097 tokens. We limit the story to 4096 tokens.
+            'wrap="virtual" rows="10" cols="50"'); // This model's maximum context length is 4097 tokens. We limit the story to 4096 tokens.
         $mform->setType('story', PARAM_RAW);
-        $mform->addHelpButton('story', 'story', 'local_aiquestions');        
+        $mform->addHelpButton('story', 'story', 'local_aiquestions');
 
         // Preset.
         $presets = array();
@@ -64,12 +65,12 @@ class local_aiquestions_story_form extends moodleform {
             if ($presetname = get_config('local_aiquestions', 'presetname' . $i)) {
                 $presets[] = $presetname;
             }
-        }        
+        }
         $mform->addElement('select', 'preset', get_string('preset', 'local_aiquestions'), $presets);
 
         // Edit preset.
-        $mform->addElement('checkbox', 'editpreset', get_string('editpreset', 'local_aiquestions'));        
-        $mform->addElement('html', get_string('shareyourprompts', 'local_aiquestions'));        
+        $mform->addElement('checkbox', 'editpreset', get_string('editpreset', 'local_aiquestions'));
+        $mform->addElement('html', get_string('shareyourprompts', 'local_aiquestions'));
 
         // Create elements for all presets.
         for ($i = 0; $i < 10; $i++) {
@@ -78,7 +79,7 @@ class local_aiquestions_story_form extends moodleform {
 
             // Primer.
             $mform->addElement('textarea', 'primer' . $i, get_string('primer', 'local_aiquestions'),
-                'wrap="virtual" maxlength="16384" rows="10" cols="50"');
+                'wrap="virtual" rows="10" cols="50"');
             $mform->setType('primer' . $i, PARAM_RAW);
             $mform->setDefault('primer' . $i, get_config('local_aiquestions', 'presettprimer' . $primer));
             $mform->addHelpButton('primer' . $i, 'primer', 'local_aiquestions');
@@ -87,7 +88,7 @@ class local_aiquestions_story_form extends moodleform {
 
             // Instructions.
             $mform->addElement('textarea', 'instructions' . $i, get_string('instructions', 'local_aiquestions'),
-            'wrap="virtual" maxlength="16384" rows="10" cols="50"');
+            'wrap="virtual" rows="10" cols="50"');
             $mform->setType('instructions' . $i, PARAM_RAW);
             $mform->setDefault('instructions' . $i, get_config('local_aiquestions', 'presetinstructions' . $primer));
             $mform->addHelpButton('instructions' . $i, 'instructions', 'local_aiquestions');
@@ -96,12 +97,12 @@ class local_aiquestions_story_form extends moodleform {
 
             // Example.
             $mform->addElement('textarea', 'example' . $i, get_string('example', 'local_aiquestions'),
-            'wrap="virtual" maxlength="16384" rows="10" cols="50"');
+            'wrap="virtual" rows="10" cols="50"');
             $mform->setType('example' . $i, PARAM_RAW);
             $mform->setDefault('example' . $i, get_config('local_aiquestions', 'presetexample' . $primer));
             $mform->addHelpButton('example' . $i, 'example', 'local_aiquestions');
-            $mform->hideif('example' . $i, 'editpreset');     
-            $mform->hideif('example' . $i, 'preset', 'neq', $i);   
+            $mform->hideif('example' . $i, 'editpreset');
+            $mform->hideif('example' . $i, 'preset', 'neq', $i);
 
         }
 

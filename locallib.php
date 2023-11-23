@@ -32,13 +32,14 @@
  */
 function local_aiquestions_get_questions($data) {
 
-    global $CFG;    
+    global $CFG;
 
     // Build primer.
     $primer = $data->primer;
     $primer .= "Write $data->numofquestions questions.";
 
     $key = get_config('local_aiquestions', 'key');
+    $model = get_config('local_aiquestions', 'model');
     $url = 'https://api.openai.com/v1/chat/completions';
     $authorization = "Authorization: Bearer " . $key;
 
@@ -51,7 +52,7 @@ function local_aiquestions_get_questions($data) {
     $example = str_replace("\r", " ", $example);
 
     $data = '{
-        "model": "gpt-3.5-turbo",
+        "model": "' . $model . '",
         "messages": [
             {"role": "system", "content": "' . $primer . '"},
             {"role": "system", "name":"example_user", "content": "' . $instructions . '"},
@@ -105,7 +106,7 @@ function local_aiquestions_create_questions($courseid, $category, $gift, $numofq
         $categoryids = explode(',',$category);
         $categoryid = $categoryids[0];
         $categorycontextid = $categoryids[1];
-        $category = $DB->get_record('question_categories', ['id' => $categoryid, 'contextid' => $categorycontextid]);  
+        $category = $DB->get_record('question_categories', ['id' => $categoryid, 'contextid' => $categorycontextid]);
     }
 
     // Use existing questions category for quiz or create the defaults.
@@ -132,7 +133,7 @@ function local_aiquestions_create_questions($courseid, $category, $gift, $numofq
         $questiontext = trim(preg_replace('/^.*::/', '', $questiontext[0]));
         $qtype = 'multichoice';
         $q = $qformat->readquestion($singlequestion);
-        
+
         // Check if question is valid.
         if (!$q) {
             return false;

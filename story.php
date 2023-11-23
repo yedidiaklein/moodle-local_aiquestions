@@ -56,14 +56,14 @@ echo $OUTPUT->header();
 
 $mform = new local_aiquestions_story_form();
 
-if ($mform->is_cancelled()) {    
-    redirect($CFG->wwwroot . '/course/view.php?id=' . $courseid);        
-} else if ($data = $mform->get_data()) {    
-    
+if ($mform->is_cancelled()) {
+    redirect($CFG->wwwroot . '/course/view.php?id=' . $courseid);
+} else if ($data = $mform->get_data()) {
+
     // Call the adhoc task.
     $task = new \local_aiquestions\task\questions();
     if ($task) {
-        $uniqid = uniqid($USER->id, true);        
+        $uniqid = uniqid($USER->id, true);
         $preset = $data->preset;
         $primer = 'primer' . $preset;
         $instructions = 'instructions' . $preset;
@@ -72,7 +72,7 @@ if ($mform->is_cancelled()) {
                                 'primer' => $data->$primer,
                                 'instructions' => $data->$instructions,
                                 'example' => $data->$example,
-                                'story' => $data->story,                                
+                                'story' => $data->story,
                                 'numofquestions' => $data->numofquestions,
                                 'courseid' => $data->courseid,
                                 'userid' => $USER->id,
