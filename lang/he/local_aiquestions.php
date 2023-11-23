@@ -70,5 +70,3 @@ https://docs.moodle.org/en/Cron#Setting_up_cron_on_your_system
 $string['createdquestionsuccess'] = 'השאלה נוצרה בהצלחה';
 $string['createdquestionssuccess'] = 'השאלות נוצרו בהצלחה';
 $string['errornotcreated'] = 'שגיאה : השאלות לא נוצרו';
-$string['openaiendpoint'] = 'קישור OpenAI';
-$string['openaiendpointdesc'] = 'הזינו פה קישור של OpenAI במידה ומשתמשים ב-Azure OpenAI';

@@ -37,6 +37,6 @@ $gift = "
     ~ 5
 }";
 
-$question = local_aiquestions_create_questions(2, $gift, 1, 3);
+$question = local_aiquestions_create_questions(2, null, $gift, 1, 3);
 var_dump($question);
 

@@ -70,6 +70,3 @@ https://docs.moodle.org/en/Cron#Setting_up_cron_on_your_system
 $string['createdquestionsuccess'] = 'Question créée avec succès.';
 $string['createdquestionssuccess'] = 'Questions créées avec succès.';
 $string['errornotcreated'] = 'Erreur : les questions n\'ont pas été créées.';
-$string['openaiendpoint'] = 'Point de terminaison OpenAI';
-$string['openaiendpointdesc'] = 'Veuillez sélectionner ici le point de terminaison OpenAI - pour Azure OpenAI';
-

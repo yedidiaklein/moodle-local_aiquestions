@@ -25,6 +25,8 @@
 
 namespace local_aiquestions\task;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * The question generator adhoc task.
  *
@@ -46,6 +48,7 @@ class questions extends \core\task\adhoc_task {
         // Get the data from the task.
         $data = $this->get_custom_data();
         $courseid = $data->courseid;
+        $category = $data->category;
         $story = $data->story;
         $userid = $data->userid;
         $uniqid = $data->uniqid;
@@ -65,55 +68,74 @@ class questions extends \core\task\adhoc_task {
         $dbrecord->success = '';
         $inserted = $DB->insert_record('local_aiquestions', $dbrecord);
 
+        // Create questions.
         $created = false;
         $i = 1;
         $error = ''; // Error message.
         $update = new \stdClass();
-        while (!$created && $i < $numoftries) {
+
+        echo "[local_aiquestions] Creating Questions via OpenAI...\n";
+        echo "[local_aiquestions] Try $i of $numoftries...\n";
+
+        while (!$created && $i <= $numoftries) {
+
             // First update DB on tries.
             $update->id = $inserted;
             $update->tries = $i;
             $update->datemodified = time();
             $DB->update_record('local_aiquestions', $update);
+
             // Get questions from ChatGPT API.
-            $questions = \local_aiquestions_get_questions($courseid, $story, $numofquestions);
+            $questions = \local_aiquestions_get_questions($data);
+
             // Print error message of ChatGPT API (if there are).
             if (isset($questions->error->message)) {
                 $error .= $questions->error->message;
+
                 // Print error message to cron/adhoc output.
-                echo "[local_aiquestions] Error : " . $error . "\n";
+                echo "[local_aiquestions] Error : $error.\n";
             }
 
             // Check gift format.
-            if (\local_aiquestions_check_gift($questions->text)) {
-                // Create the questions, return an array of objetcs of the created questions.
-                $created = \local_aiquestions_create_questions($courseid, $questions->text, $numofquestions, $userid);
-                $j = 0;
-                foreach ($created as $question) {
-                    $success[$j]['id'] = $question->id;
-                    $success[$j]['questiontext'] = $question->questiontext;
-                    $j++;
+            if (property_exists($questions, 'text')) {
+                if (\local_aiquestions_check_gift($questions->text)) {
+
+                    // Create the questions, return an array of objetcs of the created questions.
+                    $created = \local_aiquestions_create_questions($courseid, $category, $questions->text, $numofquestions, $userid);
+                    $j = 0;
+                    foreach ($created as $question) {
+                        $success[$j]['id'] = $question->id;
+                        $success[$j]['questiontext'] = $question->questiontext;
+                        $j++;
+                    }
+
+                    echo "[local_aiquestions] Successfully created $j questions!\n";
+
+                    // Insert success creation info to DB.
+                    $update->id = $inserted;
+                    $update->gift = $questions->text;
+                    $update->tries = $i;
+                    $update->success = json_encode(array_values($success));
+                    $update->datemodified = time();
+                    $DB->update_record('local_aiquestions', $update);
                 }
-                // Insert success creation info to DB.
-                $update->id = $inserted;
-                $update->gift = $questions->text;
-                $update->tries = $i;
-                $update->success = json_encode(array_values($success));
-                $update->datemodified = time();
-                $DB->update_record('local_aiquestions', $update);
+            } else {
+                echo "[local_aiquestions] Error: No question text returned \n";
             }
             $i++;
         }
+
         // If questions were not created.
         if (!$created) {
             // Insert error info to DB.
             $update = new \stdClass();
             $update->id = $inserted;
-            $update->tries = $i;
+            $update->tries = $i - 1;
             $update->timemodified = time();
             $update->success = 0;
             $DB->update_record('local_aiquestions', $update);
         }
+
         // Print error message.
         // It will be shown on cron/adhoc output (file/whatever).
         if ($error != '') {

@@ -27,44 +27,37 @@
 /**
  * Get questions from the API.
  *
- * @param int $courseid course id
- * @param string $story text of the story
- * @param int $numofquestions number of questions to generate
- * @param bool $idiot 1 if ChatGPT is an idiot, 0 if not
+ * @param object data data to create questions from
  * @return object questions of generated questions
  */
-function local_aiquestions_get_questions($courseid, $story, $numofquestions, $idiot = 1) {
-    global $CFG;
-    $language = get_config('local_aiquestions', 'language');
-    $savelang = current_language();
-    force_current_language('en');
-    $languages = get_string_manager()->get_list_of_languages();
-    $language = $languages[$language];
-    force_current_language($savelang);
+function local_aiquestions_get_questions($data) {
 
-    $explanation = "Please write $numofquestions multiple choice question in $language language";
-    $explanation .= " in GIFT format on the following text, ";
-    $explanation .= " GIFT format use equal sign for right answer and tilde sign for wrong answer at the beginning of answers.";
-    $explanation .= " For example: '::Question title { =right answer ~wrong answer ~wrong answer ~wrong answer }' ";
-    $explanation .= " Please have a blank line between questions. ";
-    if ($idiot == 1) {
-        $explanation .= " Write the questions in the right format! ";
-        $explanation .= " Do not forget any equal or tilde sign !";
-    }
+    global $CFG;
+
+    // Build primer.
+    $primer = $data->primer;
+    $primer .= "Write $data->numofquestions questions.";
 
     $key = get_config('local_aiquestions', 'key');
-    $url = get_config('local_aiquestions', 'endpoint');
+    $model = get_config('local_aiquestions', 'model');
+    $url = 'https://api.openai.com/v1/chat/completions';
     $authorization = "Authorization: Bearer " . $key;
 
     // Remove new lines and carriage returns.
-    $story = str_replace("\n", " ", $story);
+    $story = str_replace("\n", " ", $data->story);
     $story = str_replace("\r", " ", $story);
+    $instructions = str_replace("\n", " ", $data->instructions);
+    $instructions = str_replace("\r", " ", $instructions);
+    $example = str_replace("\n", " ", $data->example);
+    $example = str_replace("\r", " ", $example);
 
     $data = '{
-        "model": "gpt-3.5-turbo",
+        "model": "' . $model . '",
         "messages": [
-            {"role": "system", "content": "' . $explanation . '"},
-            {"role": "user", "content": "' . local_aiquestions_escape_json($story) . '"}
+            {"role": "system", "content": "' . $primer . '"},
+            {"role": "system", "name":"example_user", "content": "' . $instructions . '"},
+            {"role": "system", "name": "example_assistant", "content": "' . $example . '"},
+            {"role": "user", "content": "Now, create ' . $data->numofquestions . ' questions for me based on this topic: ' . local_aiquestions_escape_json($story) . '"}
             ]}';
 
     $ch = curl_init($url);
@@ -91,12 +84,13 @@ function local_aiquestions_get_questions($courseid, $story, $numofquestions, $id
  * Create questions from data got from ChatGPT output.
  *
  * @param int $courseid course id
+ * @param int $category course category
  * @param string $gift questions in GIFT format
  * @param int $numofquestions number of questions to generate
  * @param int $userid user id
  * @return array of objects of created questions
  */
-function local_aiquestions_create_questions($courseid, $gift, $numofquestions, $userid) {
+function local_aiquestions_create_questions($courseid, $category, $gift, $numofquestions, $userid) {
     global $CFG, $USER, $DB;
 
     require_once($CFG->libdir . '/questionlib.php');
@@ -107,10 +101,20 @@ function local_aiquestions_create_questions($courseid, $gift, $numofquestions, $
 
     $coursecontext = \context_course::instance($courseid);
 
+    // Get question category TODO: there is probably a better way to do this.
+    if ($category) {
+        $categoryids = explode(',',$category);
+        $categoryid = $categoryids[0];
+        $categorycontextid = $categoryids[1];
+        $category = $DB->get_record('question_categories', ['id' => $categoryid, 'contextid' => $categorycontextid]);
+    }
+
     // Use existing questions category for quiz or create the defaults.
-    $contexts = new core_question\local\bank\question_edit_contexts($coursecontext);
-    if (!$category = $DB->get_record('question_categories', ['contextid' => $coursecontext->id, 'sortorder' => 999])) {
-        $category = question_make_default_categories($contexts->all());
+    if (!$category) {
+        $contexts = new core_question\local\bank\question_edit_contexts($coursecontext);
+        if (!$category = $DB->get_record('question_categories', ['contextid' => $coursecontext->id, 'sortorder' => 999])) {
+            $category = question_make_default_categories($contexts->all());
+        }
     }
 
     // Split questions based on blank lines.
@@ -123,11 +127,13 @@ function local_aiquestions_create_questions($courseid, $gift, $numofquestions, $
     $createdquestions = []; // Array of objects of created questions.
     foreach ($questions as $question) {
         $singlequestion = explode("\n", $question);
+
         // Manipulating question text manually for question text field.
         $questiontext = explode('{', $singlequestion[0]);
-        $questiontext = trim(str_replace('::', '', $questiontext[0]));
+        $questiontext = trim(preg_replace('/^.*::/', '', $questiontext[0]));
         $qtype = 'multichoice';
         $q = $qformat->readquestion($singlequestion);
+
         // Check if question is valid.
         if (!$q) {
             return false;

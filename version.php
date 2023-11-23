@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_aiquestions';
-$plugin->release = '0.9.8';
-$plugin->version = 2023070200;
+$plugin->release = '1.0';
+$plugin->version = 202311230001;
 $plugin->requires = 2022041900;
-$plugin->maturity = MATURITY_RC;
+$plugin->maturity = MATURITY_STABLE;

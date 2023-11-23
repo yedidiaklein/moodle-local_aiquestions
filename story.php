@@ -57,26 +57,29 @@ echo $OUTPUT->header();
 $mform = new local_aiquestions_story_form();
 
 if ($mform->is_cancelled()) {
-    if (empty($returnurl)) {
-        redirect($CFG->wwwroot . '/local/aiquestions/');
-    } else {
-        redirect($returnurl);
-    }
-} else if ($fromform = $mform->get_data()) {
-    $story = $fromform->story;
-    $numofquestions = $fromform->numofquestions;
+    redirect($CFG->wwwroot . '/course/view.php?id=' . $courseid);
+} else if ($data = $mform->get_data()) {
 
     // Call the adhoc task.
     $task = new \local_aiquestions\task\questions();
     if ($task) {
         $uniqid = uniqid($USER->id, true);
-        $task->set_custom_data(['story' => $story,
-                                'numofquestions' => $numofquestions,
-                                'courseid' => $courseid,
+        $preset = $data->preset;
+        $primer = 'primer' . $preset;
+        $instructions = 'instructions' . $preset;
+        $example = 'example' . $preset;
+        $task->set_custom_data(['category' => $data->category,
+                                'primer' => $data->$primer,
+                                'instructions' => $data->$instructions,
+                                'example' => $data->$example,
+                                'story' => $data->story,
+                                'numofquestions' => $data->numofquestions,
+                                'courseid' => $data->courseid,
                                 'userid' => $USER->id,
                                 'uniqid' => $uniqid ]);
         \core\task\manager::queue_adhoc_task($task);
         $success = get_string('tasksuccess', 'local_aiquestions');
+
     } else {
         $error = get_string('taskerror', 'local_aiquestions');
     }

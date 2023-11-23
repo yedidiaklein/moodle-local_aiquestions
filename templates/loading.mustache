@@ -51,9 +51,14 @@
 <div id="local_aiquestions_uniqid" style="display:none;">{{uniqid}}</div>
 <div id="local_aiquestions_userid" style="display:none;">{{userid}}</div>
 
-<p class="local_aiquestions_backtocourse"><a href='{{wwwroot}}/course/view.php?id={{courseid}}'>
-    {{#str}}backtocourse, local_aiquestions{{/str}}</a></p>
-<p class="local_aiquestions_gotoquestionbank"><a href='{{wwwroot}}/question/edit.php?courseid={{courseid}}'>
-    {{#str}}gotoquestionbank, local_aiquestions{{/str}}</a></p>
-<p class="local_aiquestions_generatemore"><a href='{{wwwroot}}/local/aiquestions/story.php?courseid={{courseid}}'>
-    {{#str}}generatemore, local_aiquestions{{/str}}</a></p>
+<p class="d-flex">
+    <a id="localaiquestions_backtocourse" class="btn btn-primary m-1" href='{{wwwroot}}/course/view.php?id={{courseid}}'>
+        {{#str}}backtocourse, local_aiquestions{{/str}}
+    </a>
+    <a id="local_aiquestions_gotoquestionbank" class="btn btn-secondary m-1" href='{{wwwroot}}/question/edit.php?courseid={{courseid}}'>
+        {{#str}}gotoquestionbank, local_aiquestions{{/str}}
+    </a>
+    <a id="local_aiquestions_generatemore" class="btn btn-secondary m-1" href='{{wwwroot}}/local/aiquestions/story.php?courseid={{courseid}}'>
+        {{#str}}generatemore, local_aiquestions{{/str}}
+    </a>
+</p>
