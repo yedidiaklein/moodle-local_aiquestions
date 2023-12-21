@@ -59,8 +59,8 @@ class questions_test extends \advanced_testcase {
         // Create user.
         $user = $this->getDataGenerator()->create_user();
         $course = $this->getDataGenerator()->create_course();
-        // Params are : courseid, gift, numofquestions, userid.
-        $question = \local_aiquestions_create_questions($course->id, $gift, 1, $user->id);
+        // Params are : courseid, gift, numofquestions, userid, addidentifier.
+        $question = \local_aiquestions_create_questions($course->id, $gift, 1, $user->id, 1);
         $this->assertEquals($question[0]->name, 'My interesting questionText');
         $this->assertEquals($question[0]->qtype, 'multichoice');
     }

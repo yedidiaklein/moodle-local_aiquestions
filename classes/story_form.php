@@ -59,6 +59,11 @@ class local_aiquestions_story_form extends moodleform {
         $mform->setType('story', PARAM_RAW);
         $mform->addHelpButton('story', 'story', 'local_aiquestions');
 
+        // Add "GPT-created" to question name.
+        $mform->addElement('checkbox', 'addidentifier', get_string('addidentifier', 'local_aiquestions'));
+        $mform->setDefault('addidentifier', 1); // Default of "yes"
+        $mform->setType('addidentifier', PARAM_BOOL);
+
         // Preset.
         $presets = array();
         for ($i = 0; $i < 10; $i++) {
