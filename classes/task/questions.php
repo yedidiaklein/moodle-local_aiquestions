@@ -53,6 +53,7 @@ class questions extends \core\task\adhoc_task {
         $userid = $data->userid;
         $uniqid = $data->uniqid;
         $numofquestions = $data->numofquestions;
+        $addidentifier = $data->addidentifier;
 
         // Create the DB entry.
         $dbrecord = new \stdClass();
@@ -101,7 +102,7 @@ class questions extends \core\task\adhoc_task {
                 if (\local_aiquestions_check_gift($questions->text)) {
 
                     // Create the questions, return an array of objetcs of the created questions.
-                    $created = \local_aiquestions_create_questions($courseid, $category, $questions->text, $numofquestions, $userid);
+                    $created = \local_aiquestions_create_questions($courseid, $category, $questions->text, $numofquestions, $userid, $addidentifier);
                     $j = 0;
                     foreach ($created as $question) {
                         $success[$j]['id'] = $question->id;
