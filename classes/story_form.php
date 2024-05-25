@@ -19,7 +19,8 @@
  *
  * @package     local_aiquestions
  * @category    admin
- * @copyright   2023 Ruthy Salomon <ruthy.salomon@gmail.com> , Yedidia Klein <yedidia@openapp.co.il>
+ * @copyright   2023 Ruthy Salomon <ruthy.salomon@gmail.com>, 
+ *              Yedidia Klein <yedidia@openapp.co.il>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -48,10 +49,9 @@ class local_aiquestions_story_form extends moodleform
             'questioncategory',
             'category',
             get_string('category', 'question'),
-            array('contexts' => $contexts)
+            ['contexts' => $contexts]
         );
         $mform->addHelpButton('category', 'category', 'local_aiquestions');
-
 
         // Number of questions.
         $defaultnumofquestions = 4;
@@ -59,70 +59,70 @@ class local_aiquestions_story_form extends moodleform
             'select',
             'numofquestions',
             get_string('numofquestions', 'local_aiquestions'),
-            array('1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9, '10' => 10)
+            ['1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9, '10' => 10]
         );
         $select->setSelected($defaultnumofquestions);
         $mform->setType('numofquestions', PARAM_INT);
 
         // Exam focus.
-        $select = $mform->addElement(
+        $mform->addElement(
             'textarea',
             'examFocus',
             get_string('focus', 'local_aiquestions'),
             'wrap="virtual" rows="6" cols="10"'
         );
-        $mform->setType('focus', PARAM_RAW);
+        $mform->setType('examFocus', PARAM_RAW);
 
-        // Language
+        // Language.
         $defaultlanguage = "English";
         $select = $mform->addElement(
             'select',
             'examLanguage',
             get_string('languagedesc', 'local_aiquestions'),
-            array('English' => "English", 'Hebrew' => "Hebrew", 'Hindi' => "Hindi",'Spanish': 'Spanish', 'German' => "German", 'French' => "French", 'Russian' =>"Russian", 'Arabic'=> "Arabic")
+            ['English' => "English", 'Hebrew' => "Hebrew", 'Hindi' => "Hindi", 'Spanish' => 'Spanish', 'German' => "German", 'French' => "French", 'Russian' => "Russian", 'Arabic' => "Arabic"]
         );
-        $mform->setType('language', PARAM_RAW);
+        $select->setSelected($defaultlanguage);
+        $mform->setType('examLanguage', PARAM_RAW);
 
-        // Text
-        $select = $mform->addElement(
+        // Text.
+        $mform->addElement(
             'text',
             'text',
             get_string('text', 'local_aiquestions'),
             'wrap="virtual" rows="10" cols="10"'
         );
         $mform->setType('text', PARAM_RAW);
-        $select->setSelected($defaultlanguage);
 
-        // field (exam type)
+        // Field (exam type).
         $select = $mform->addElement(
             'select',
             'field',
-            "Choose the exam type" //move this to lang file later
-            array("Topic"=>"topic","Text"=>"text","Based On"=>"based","URL"=>"url","Math"=>"math")// move the aray to satatic config
+            get_string('field', 'local_aiquestions'), // Move this to lang file later.
+            ["Topic" => "topic", "Text" => "text", "Based On" => "based", "URL" => "url", "Math" => "math"] // Move the array to static config.
         );
-        $mform->setType('text', PARAM_RAW);
         $select->setSelected("Topic");
+        $mform->setType('field', PARAM_RAW);
 
-        // question level
+        // Question level.
         $select = $mform->addElement(
             'select',
             'questionLevel',
-            "Question Level" //move this to lang file later
-            array("Academic"=>"Academic")// move the aray to satatic config
+            get_string('questionLevel', 'local_aiquestions'), // Move this to lang file later.
+            ["Academic" => "Academic"] // Move the array to static config.
         );
-        $mform->setType('questionLevel', PARAM_RAW);
         $select->setSelected("Academic");
+        $mform->setType('questionLevel', PARAM_RAW);
 
-        // exam tags
+        // Exam tags.
         $select = $mform->addElement(
             'select',
             'examTags',
-            "Select Tags" //move this to lang file later
-            array("Cognitive literacy"=>"Cognitive literacy","Mathematical literacy"=>"Mathematical literacy","Scientific literacy"=>"Scientific literacy","Critical Thinking"=>"Critical Thinking")// move the aray to satatic config
+            get_string('examTags', 'local_aiquestions'), // Move this to lang file later.
+            ["Cognitive literacy" => "Cognitive literacy", "Mathematical literacy" => "Mathematical literacy", "Scientific literacy" => "Scientific literacy", "Critical Thinking" => "Critical Thinking"] // Move the array to static config.
         );
+        $select->setMultiple(true);
+        $select->setSelected(["Cognitive literacy"]);
         $mform->setType('examTags', PARAM_RAW);
-        $mform->getElement('examTags')->setMultiple(true);
-        $select->setSelected("Cognitive literacy");
 
         // Story.
         $mform->addElement(
@@ -135,7 +135,7 @@ class local_aiquestions_story_form extends moodleform
         $mform->addHelpButton('story', 'story', 'local_aiquestions');
 
         // Preset.
-        $presets = array();
+        $presets = [];
         for ($i = 0; $i < 10; $i++) {
             if ($presetname = get_config('local_aiquestions', 'presetname' . $i)) {
                 $presets[] = $presetname;
@@ -196,11 +196,12 @@ class local_aiquestions_story_form extends moodleform
         $mform->addElement('hidden', 'courseid', $courseid);
         $mform->setType('courseid', PARAM_INT);
 
-        $buttonarray = array();
+        $buttonarray = [];
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('generate', 'local_aiquestions'));
         $buttonarray[] = &$mform->createElement('cancel', 'cancel', get_string('backtocourse', 'local_aiquestions'));
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
     }
+
     /**
      * Form validation
      *
@@ -210,6 +211,6 @@ class local_aiquestions_story_form extends moodleform
      */
     public function validation($data, $files)
     {
-        return array();
+        return [];
     }
 }
