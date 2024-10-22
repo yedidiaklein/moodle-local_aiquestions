@@ -4,7 +4,7 @@ namespace local_aiquiz;
 defined('MOODLE_INTERNAL') || die();
 
 class api_client {
-    private $api_base_url = 'https://examgenerator-ai-dev-slot.azurewebsites.net/api/v1';
+    private $api_base_url = 'https://exam-generator.com/api/v1';
     private $access_token;
 
     public function __construct() {
@@ -54,13 +54,12 @@ class api_client {
         return $response_data->access_token;
     }
 
-    public function generate_exam($text, $questions, $difficulty, $language, $focus = '', $example_question = '', $is_closed_content = true) {
+    public function generate_exam($text, $questions, $difficulty, $language, $focus = '', $example_question = '', $is_closed_content = false, $use_indicator = true) {
         $curl = new \curl();
         $curl->setHeader([
             'Authorization: Bearer ' . $this->access_token,
             'Content-Type: application/json'
         ]);
-        
         $data = [
             'text' => $text,
             'questions' => $questions,
@@ -68,11 +67,11 @@ class api_client {
             'language' => $language,
             'focus' => $focus,
             'exampleQuestion' => $example_question,
-            'isClosedContent' => $is_closed_content
+            'isClosedContent' => $is_closed_content,
+            'useIndicator' => $use_indicator
         ];
-        //print_r($data);
+        
         $response = $curl->post($this->api_base_url . '/gen/exam/sync', json_encode($data));
-
         //debugging('result'.$this->access_token.$data.$response, DEBUG_DEVELOPER);
         
         $result = json_decode($response, true);
