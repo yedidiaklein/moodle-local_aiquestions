@@ -1,6 +1,7 @@
 <?php
 $string['pluginname'] = 'AI Quiz Generator';
 $string['generateaiquestions'] = 'Generate AI Questions';
+$string['exam_params'] = 'Exam Parameters';
 $string['apikey'] = 'API Key';
 $string['apikeydesc'] = 'Enter your API key for the AI question generation service';
 $string['topic'] = 'Topic';
@@ -12,6 +13,9 @@ $string['language'] = 'Language';
 $string['focus'] = 'Focus';
 $string['examplequestion'] = 'Example Question';
 $string['isclosedcontent'] = 'Is Closed Content';
+$string['isclosedcontentdesc'] = 'Check to use only the provided text for generating questions';
+$string['use_indicator'] = 'Use Indicator';
+$string['use_indicator_desc'] = 'Check to use indicator for generated questions';
 $string['questiontype'] = 'Question Type';
 $string['numberofquestions'] = 'Number of Questions';
 $string['multiplechoice'] = 'Multiple Choice';
@@ -22,7 +26,7 @@ $string['questionsgenerated'] = '{$a} questions have been generated and added to
 $string['missingcredentials'] = 'API key or user email is missing';
 $string['invalidjsonresponse'] = 'Invalid JSON response received from the API';
 $string['apiauthenticationfailed'] = 'API authentication';
-$string['questionspecification'] = 'Question Specification';
+$string['questionchoice'] = 'Choose Questions Type';
 $string['addquestion'] = 'Add More Question';
 $string['removequestion'] = 'Remove Question';
 $string['questionnumber'] = 'Question {$a}';
@@ -33,7 +37,6 @@ $string['application'] = 'Application';
 $string['analysis'] = 'Analysis';
 $string['evaluation'] = 'Evaluation';
 $string['creation'] = 'Creation';
-$string['isclosedcontentdesc'] = 'Check to use only the provided text for generating questions';
 $string['questiontype'] = 'Question Type';
 $string['bloomtype'] = 'Bloom\'s Taxonomy Level';
 $string['questionnumber'] = 'Question {$a}';
@@ -66,7 +69,6 @@ $string['questionnumber'] = 'Question {$a}';
 $string['youranswer'] = 'Your Answer';  
 $string['aiquizname'] = 'Ai Quiz Name'; 
 $string['aiquiztopic'] = 'Ai Quiz Topic'; 
-$string['questionspec'] = 'Question Spec'; 
 
 $string['uploadfile'] = 'Upload File';
 $string['uploadfile_help'] = 'Upload a PPTX, PDF, DOCX, TXT, or VTT file to use as the basis for generating questions.';
@@ -86,5 +88,4 @@ $string['ai_grade'] = 'AI Grade';
 $string['ai_feedback'] = 'AI Feedback';
 $string['no_ai_evaluation'] = 'No AI evaluation available for this attempt.';
 
- 
  

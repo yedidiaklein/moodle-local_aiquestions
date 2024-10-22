@@ -12,27 +12,26 @@ class generate_form extends \moodleform {
         $mform = $this->_form;
 
         // Adding the "general" fieldset, where all the common settings are shown.
-        $mform->addElement('header', 'general', get_string('general', 'form'));
+        $mform->addElement('header', 'general', get_string('exam_params', 'local_aiquiz'));
 
         // Adding the standard "name" field.
-        $mform->addElement('text', 'name', get_string('aiquizname', 'local_aiquiz'), array('size' => '64'));
-        if (!empty($CFG->formatstringstriptags)) {
-            $mform->setType('name', PARAM_TEXT);
-        } else {
-            $mform->setType('name', PARAM_CLEANHTML);
-        }
-
-        if (isset($this->_customdata['default_name'])) {
-            $mform->setDefault('name', $this->_customdata['default_name']);
-        }
-
-        $mform->addRule('name', null, 'required', null, 'client');
-        $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        // $mform->addElement('text', 'name', get_string('aiquizname', 'local_aiquiz'), array('size' => '64'));
+        // if (!empty($CFG->formatstringstriptags)) {
+        //     $mform->setType('name', PARAM_TEXT);
+        // } else {
+        //     $mform->setType('name', PARAM_CLEANHTML);
+        // }
+        // if (isset($this->_customdata['default_name'])) {
+        //     $mform->setDefault('name', $this->_customdata['default_name']);
+        // }
+        // $mform->addRule('name', null, 'required', null, 'client');
+        // $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
         // Adding the "topic" field.
         $mform->addElement('textarea', 'topic', get_string('aiquiztopic', 'local_aiquiz'), 
                            array('rows' => 5, 'cols' => 60));
         $mform->setType('topic', PARAM_TEXT);
+        $mform->addRule('topic', null, 'required', null, 'client');
         $mform->addHelpButton('topic', 'aiquiztopic', 'local_aiquiz');
 
         // Adding file upload field
@@ -82,7 +81,7 @@ class generate_form extends \moodleform {
         $mform->addRule('language', null, 'required', null, 'client');
 
         // Adding the "focus" field.
-        $mform->addElement('text', 'focus', get_string('focus', 'local_aiquiz'));
+        $mform->addElement('textarea', 'focus', get_string('focus', 'local_aiquiz'), array('rows' => 3, 'cols' => 60));
         $mform->setType('focus', PARAM_TEXT);
 
         // Adding the "example_question" field.
@@ -93,10 +92,15 @@ class generate_form extends \moodleform {
         // Adding the "is_closed_content" field.
         $mform->addElement('advcheckbox', 'is_closed_content', get_string('isclosedcontent', 'local_aiquiz'), 
                            get_string('isclosedcontentdesc', 'local_aiquiz'), array(), array(0, 1));
-        $mform->setDefault('is_closed_content', 1);
+        $mform->setDefault('is_closed_content', 0);
+
+        // Adding the "use_indicator" field.
+        $mform->addElement('advcheckbox', 'use_indicator', get_string('use_indicator', 'local_aiquiz'), 
+                           get_string('use_indicator_desc', 'local_aiquiz'), array(), array(0, 1));
+        $mform->setDefault('use_indicator', 1);
 
         // Adding question specification fields
-        $mform->addElement('header', 'questionspec', get_string('questionspec', 'local_aiquiz')); 
+        $mform->addElement('header', 'questionchoice', get_string('questionchoice', 'local_aiquiz')); 
 
         $question_types = array(
             '' => '--',
@@ -145,7 +149,7 @@ class generate_form extends \moodleform {
         return "
             require(['jquery'], function($) {
                 $('#id_submitbutton').click(function() {
-                    if ($('#id_name').val() && $('#id_topic').val()) {
+                    if ($('#id_topic').val()) {
                         // Add a loading overlay with a progress bar
                         $('body').append(`
                             <div id=\"loading-overlay\" style=\"position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 9999;\">

@@ -44,10 +44,7 @@ function local_aiquiz_generate_questions($formdata, $quizid) {
         $file = $formdata->uploadedfile;
         $file_content = $file->get_content();
         $file_name = $file->get_filename();
-        $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
-
-
-        
+        $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);        
     
         // Determine API endpoint based on file type
         $api_endpoint = '';
@@ -119,14 +116,11 @@ function local_aiquiz_generate_questions($formdata, $quizid) {
                     'bloomType' => $bloom_type
                 );
             }
-            
-            error_log("Added question $i - Type: $question_type, Bloom: $bloom_type");
         } else {
             error_log("Missing data for question $i");
         }
     }
     //print_r($questions);
-
     if (empty($questions)) {
         error_log('No questions were added to the array');
         throw new \moodle_exception('noquestionsspecified', 'local_aiquiz');
@@ -138,14 +132,13 @@ function local_aiquiz_generate_questions($formdata, $quizid) {
         $formdata->language,
         $formdata->focus ?? '',
         $formdata->example_question ?? '',
-        $formdata->is_closed_content ?? true
+        boolval($formdata->is_closed_content) ? true : false,
+        boolval($formdata->use_indicator) ? true : false
     );
     //print_r($questions);
     if (!isset($exam_data['exam']['questions']) || !is_array($exam_data['exam']['questions'])) {
         throw new \moodle_exception('invalidapiresponse', 'local_aiquiz', '', 'Questions not found in API response');
     }
-
-
 
     $question_ids = local_aiquiz_save_questions_to_bank($exam_data['exam']['questions'], $quiz);
     $num_questions = count($question_ids);
@@ -167,16 +160,23 @@ function local_aiquiz_generate_questions($formdata, $quizid) {
         $metadata->id = $DB->insert_record('local_aiquiz_metadata', $metadata);
     }
     
-    $total_grade = 0;
+    
     foreach ($question_ids as $page => $question_id) {
         quiz_add_quiz_question($question_id, $quiz);
-        $total_grade += 1;
     }
-
-    $quiz->sumgrades = $total_grade;
+    // Set the total grade for the quiz
+    $total_grade = 100.00000;
     $quiz->grade = $total_grade;
+    // Update the sumgrades attribute to reflect the total of the maximum marks for all questions
+    $quiz->sumgrades = $total_grade;
+
+    // Update the quiz record in the database
+    $DB->update_record('quiz', $quiz);
+    // Update the grades in the gradebook
     quiz_update_grades($quiz);
-    $maxmark = 100/count($question_ids);
+
+    // maxmarks is the maximum grade for each question
+    $maxmark = $total_grade/count($question_ids);
     $DB->set_field('quiz_slots', 'maxmark', $maxmark, ['quizid' => $quiz->id]);
     return count($question_ids);
 }
