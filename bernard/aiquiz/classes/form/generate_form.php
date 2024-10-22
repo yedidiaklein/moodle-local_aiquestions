@@ -12,27 +12,26 @@ class generate_form extends \moodleform {
         $mform = $this->_form;
 
         // Adding the "general" fieldset, where all the common settings are shown.
-        $mform->addElement('header', 'general', get_string('general', 'form'));
+        $mform->addElement('header', 'general', get_string('exam_params', 'local_aiquiz'));
 
         // Adding the standard "name" field.
-        $mform->addElement('text', 'name', get_string('aiquizname', 'local_aiquiz'), array('size' => '64'));
-        if (!empty($CFG->formatstringstriptags)) {
-            $mform->setType('name', PARAM_TEXT);
-        } else {
-            $mform->setType('name', PARAM_CLEANHTML);
-        }
-
-        if (isset($this->_customdata['default_name'])) {
-            $mform->setDefault('name', $this->_customdata['default_name']);
-        }
-
-        $mform->addRule('name', null, 'required', null, 'client');
-        $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        // $mform->addElement('text', 'name', get_string('aiquizname', 'local_aiquiz'), array('size' => '64'));
+        // if (!empty($CFG->formatstringstriptags)) {
+        //     $mform->setType('name', PARAM_TEXT);
+        // } else {
+        //     $mform->setType('name', PARAM_CLEANHTML);
+        // }
+        // if (isset($this->_customdata['default_name'])) {
+        //     $mform->setDefault('name', $this->_customdata['default_name']);
+        // }
+        // $mform->addRule('name', null, 'required', null, 'client');
+        // $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
         // Adding the "topic" field.
         $mform->addElement('textarea', 'topic', get_string('aiquiztopic', 'local_aiquiz'), 
                            array('rows' => 5, 'cols' => 60));
         $mform->setType('topic', PARAM_TEXT);
+        $mform->addRule('topic', null, 'required', null, 'client');
         $mform->addHelpButton('topic', 'aiquiztopic', 'local_aiquiz');
 
         // Adding file upload field
