@@ -1,6 +1,58 @@
 <?php
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+
+
+function is_ai_generated_question($questionid) {
+    global $DB;
+    
+    // Check if the question has an aiquiz_id field set
+    return $DB->record_exists('question', array('id' => $questionid, 'aiquiz_id' => null, 'qtype' => 'essay'));
+}
+
+/**
+ * Override the question renderer for essay questions
+ */
+function local_aiquiz_get_renderers($PAGE) {
+    return array(
+        'qtype_essay' => new class extends qtype_essay_renderer {
+            public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
+                $output = parent::formulation_and_controls($qa, $options);
+                
+                $question = $qa->get_question();
+                if (is_ai_generated_question($question->id)) {
+                    // Replace the comment string
+                    $output = str_replace(
+                        get_string('comment', 'question'),
+                        get_string('aicommentindicator', 'local_aiquiz'),
+                        $output
+                    );
+                    
+                    // Add our custom class to the comment div
+                    $output = str_replace(
+                        'class="comment"',
+                        'class="comment ai-comment"',
+                        $output
+                    );
+                }
+                
+                return $output;
+            }
+        }
+    );
+}
+
+// Add this to ensure the styles are loaded
+function local_aiquiz_before_standard_html_head() {
+    global $PAGE;
+    
+    // Only add styles on quiz review pages
+    if ($PAGE->pagetype === 'mod-quiz-review') {
+        $PAGE->requires->css('/local/aiquiz/styles.css');
+    }
+}
+
+
 function local_aiquiz_extend_settings_navigation($settingsnav, $context) {
     global $PAGE, $CFG;
 
@@ -218,7 +270,16 @@ function local_aiquiz_save_questions_to_bank($questions, $quiz) {
         $entry->created = time();
         $entry->modified = time();
         $entry->id = $DB->insert_record('question_bank_entries', $entry);
-
+        $generalfeedback  = '';
+        if(isset($q['explanation']) || isset($q['indicator'])){
+            $generalfeedback .= '<b>AI Generated Feedback: </b>';
+        }
+        if(isset($q['explanation'])){
+            $generalfeedback .= $q['explanation'];
+        }
+        if(isset($q['indicator'])){
+            $generalfeedback .= $q['indicator'];
+        }
         $question = new stdClass();
         $question->category = $category->id;
         $question->parent = 0;
@@ -226,7 +287,7 @@ function local_aiquiz_save_questions_to_bank($questions, $quiz) {
         $question->questiontext = $q['question'];
         $question->aiquiz_id = $q['_id'];
         $question->questiontextformat = FORMAT_HTML;
-        $question->generalfeedback = '';
+        $question->generalfeedback = $generalfeedback;
         $question->generalfeedbackformat = FORMAT_HTML;
         $question->defaultmark = 1;
         $question->penalty = 0.3333333;

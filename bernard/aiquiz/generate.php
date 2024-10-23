@@ -20,6 +20,38 @@ $PAGE->set_title(get_string('generateaiquestions', 'local_aiquiz'));
 $PAGE->set_heading($course->fullname);
 $PAGE->set_context($context);
 
+function has_ai_questions($quizid) {
+    global $DB;
+    
+    // Check the metadata table for existing AI questions
+    $exists = $DB->record_exists('local_aiquiz_metadata', array('quiz_id' => $quizid));
+    
+    if ($exists) {
+        return true;
+    }
+    
+    return false;
+}
+
+// Check for existing AI questions
+if (has_ai_questions($quiz->id)) {
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading(get_string('generateaiquestions', 'local_aiquiz'));
+    
+    // Display warning message
+    echo $OUTPUT->notification(
+        get_string('aiquestions_exist', 'local_aiquiz', 
+            html_writer::link(
+                new moodle_url('/mod/quiz/edit.php', array('cmid' => $cmid)),
+                get_string('returntoquiz', 'local_aiquiz')
+            )
+        ),
+        'warning'
+    );
+    
+    echo $OUTPUT->footer();
+    exit;
+}
  
 $form = new \local_aiquiz\form\generate_form(null, array('cmid' => $cmid, 'default_name' => $quiz->name));
 
