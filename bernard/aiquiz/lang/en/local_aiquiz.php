@@ -67,8 +67,8 @@ $string['reason'] = 'Reason';
 $string['aievaluation'] = 'AI Evaluation';
 $string['questionnumber'] = 'Question {$a}';
 $string['youranswer'] = 'Your Answer';  
-$string['aiquizname'] = 'Ai Quiz Name'; 
-$string['aiquiztopic'] = 'Ai Quiz Topic'; 
+$string['aiquizname'] = 'AI Quiz Name'; 
+$string['aiquiztopic'] = 'AI Quiz Content'; 
 
 $string['uploadfile'] = 'Upload File';
 $string['uploadfile_help'] = 'Upload a PPTX, PDF, DOCX, TXT, or VTT file to use as the basis for generating questions.';
