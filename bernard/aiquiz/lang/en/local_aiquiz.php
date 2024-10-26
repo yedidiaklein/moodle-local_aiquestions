@@ -2,6 +2,8 @@
 $string['pluginname'] = 'AI Quiz Generator';
 $string['generateaiquestions'] = 'Generate AI Questions';
 $string['exam_params'] = 'Exam Parameters';
+$string['chooseinputtype'] = 'Choose Input Type';
+$string['textinput'] = 'Choose Input Type';
 $string['apikey'] = 'API Key';
 $string['apikeydesc'] = 'Enter your API key for the AI question generation service';
 $string['topic'] = 'Topic';
@@ -59,16 +61,16 @@ $string['evaluationplaceholder'] = 'AI evaluation will be implemented here.';
 $string['evaluatewithai'] = 'Evaluate with AI';
 $string['evaluationresults'] = 'Evaluation Results';
 $string['question'] = 'Question';
-$string['studentanswer'] = 'Student Answer'; 
+$string['studentanswer'] = 'Student Answer';
 $string['indicatorbreakdown'] = 'Indicator Breakdown';
 $string['allocated'] = 'Allocated';
 $string['awarded'] = 'Awarded';
-$string['reason'] = 'Reason'; 
+$string['reason'] = 'Reason';
 $string['aievaluation'] = 'AI Evaluation';
 $string['questionnumber'] = 'Question {$a}';
-$string['youranswer'] = 'Your Answer';  
-$string['aiquizname'] = 'Ai Quiz Name'; 
-$string['aiquiztopic'] = 'Ai Quiz Topic'; 
+$string['youranswer'] = 'Your Answer';
+$string['aiquizname'] = 'Ai Quiz Name';
+$string['aiquiztopic'] = 'Ai Quiz Topic';
 
 $string['uploadfile'] = 'Upload File';
 $string['uploadfile_help'] = 'Upload a PPTX, PDF, DOCX, TXT, or VTT file to use as the basis for generating questions.';
@@ -87,5 +89,3 @@ $string['ai_evaluation'] = 'AI Evaluation';
 $string['ai_grade'] = 'AI Grade';
 $string['ai_feedback'] = 'AI Feedback';
 $string['no_ai_evaluation'] = 'No AI evaluation available for this attempt.';
-
- 
