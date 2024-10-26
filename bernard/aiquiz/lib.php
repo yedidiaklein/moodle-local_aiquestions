@@ -222,6 +222,10 @@ function local_aiquiz_generate_questions($formdata, $quizid) {
     // Update the sumgrades attribute to reflect the total of the maximum marks for all questions
     $quiz->sumgrades = $total_grade;
 
+    $quiz->reviewoverallfeedback = 0; // Disable overall feedback.
+    $quiz->reviewgeneralfeedback = 0; // Disable general feedback at all stages.
+    $quiz->reviewspecificfeedback = 0; // Disable specific feedback at all stages.
+
     // Update the quiz record in the database
     $DB->update_record('quiz', $quiz);
     // Update the grades in the gradebook
