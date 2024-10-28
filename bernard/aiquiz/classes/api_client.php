@@ -86,56 +86,7 @@ class api_client {
         
         return $result;
     }
-    private function issue_one_time_tokenx() {
-        $curl = new \curl();
-        /*$curl->setHeader([
-            'X-API-KEY: ' . $this->api_key,
-            'Content-Type: application/json'
-        ]);*/
-
-        $response = $curl->post($this->api_base_url . "/issue-token", json_encode([]));
-        $result = json_decode($response, true);
-
-        if ($result === null && json_last_error() !== JSON_ERROR_NONE) {
-            throw new \moodle_exception('invalidjsonresponse', 'local_aiquiz', '', $response);
-        }
-
-        if (!isset($result['token'])) {
-            throw new \moodle_exception('tokenissuefailed', 'local_aiquiz', '', $response);
-        }
-
-        return $result['token'];
-    }
-
-    public function evaluate_examx($exam_id, $answers, $student_details) {
-        $token = $this->issue_one_time_token();
-
-        $curl = new \curl();
-        $curl->setHeader([
-            'X-Token:' . $token,
-            'Content-Type: application/json'
-        ]);
-
-        $data = [
-            'answers' => $answers,
-            'studentDetails' => $student_details,
-            'allow_auto_grade' => true
-        ];
-        //echo $token.json_encode($data);
-        $response = $curl->post($this->api_base_url . "/exams/{$exam_id}/responses", json_encode($data));
-        //print_r("response from ".$this->api_base_url . "/exams/{$exam_id}/responses ".$response );
-        $result = json_decode($response, true);
-        
-        if ($result === null && json_last_error() !== JSON_ERROR_NONE) {
-            throw new \moodle_exception('invalidjsonresponse', 'local_aiquiz', '', $response);
-        }
-        
-        if (isset($result['error'])) {
-            throw new \moodle_exception('evaluationfailed', 'local_aiquiz', '', $result['error']);
-        }
-        
-        return $result;
-    }
+    
 
     public function read_file_content($endpoint, $file_path, $file_name, $file_param_name) {
         $curl = new \curl();
