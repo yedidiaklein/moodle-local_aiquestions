@@ -10,4 +10,13 @@ $observers = array(
         'eventname' => '\local_aiquiz\event\comment_page_viewed',
         'callback' => '\local_aiquiz\observers\quiz_comment_observer::inject_content',
     ),
+
+    array(
+        'eventname' => '\core\event\question_updated',
+        'callback' => '\local_aiquiz\observer::question_updated',
+        'internal' => false,
+        'includefile' => '/local/aiquiz/classes/observer.php',
+        'priority' => 1
+    ),
+     
 );

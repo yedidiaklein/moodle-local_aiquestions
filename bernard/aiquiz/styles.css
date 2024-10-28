@@ -10,17 +10,3 @@
     display: block;
     margin-bottom: 5px;
 }
-
-a.aiquiz-button{
-    background-color: #dec8f7; 
-    /* #8884d8 */
-    color: black;
-    /* color: #9668ca; */
-    border: none;
-    cursor: pointer;
-    width: auto;
-}
-a.aiquiz-button:hover {
-    background-color: #8884d8;
-    color: white;
-}

@@ -31,15 +31,24 @@ class generate_form extends \moodleform {
         $mform->addElement('textarea', 'topic', get_string('aiquiztopic', 'local_aiquiz'), 
                            array('rows' => 5, 'cols' => 60));
         $mform->setType('topic', PARAM_TEXT);
-        $mform->addRule('topic', null, 'required', null, 'client');
+        //$mform->addRule('topic', null, 'required', null, 'client');
         $mform->addHelpButton('topic', 'aiquiztopic', 'local_aiquiz');
 
         // Adding file upload field
-        $mform->addElement('filepicker', 'uploadedfile', get_string('uploadfile', 'local_aiquiz'), null, array(
+        /*$mform->addElement('filepicker', 'uploadedfile', get_string('uploadfile', 'local_aiquiz'), null, array(
             'maxbytes' => 10485760, // 10MB max
             'accepted_types' => array('.pptx', '.pdf', '.docx', '.txt', '.vtt')
+        ));*/
+
+        $mform->addElement('filemanager', 'uploadedfile', get_string('uploadfile', 'local_aiquiz'), null, array(
+            'maxbytes' => 10485760, // 10MB max
+            'accepted_types' => array('.pptx', '.pdf', '.docx', '.txt', '.vtt'),
+            'maxfiles' => 1,
+            'subdirs' => 0
         ));
         $mform->addHelpButton('uploadedfile', 'uploadfile', 'local_aiquiz');
+
+        
 
         
 
@@ -144,7 +153,7 @@ class generate_form extends \moodleform {
         // Add JavaScript for loading overlay
         $PAGE->requires->js_amd_inline($this->get_js_code());
     }
-
+    
     protected function get_js_code() {
         return "
             require(['jquery'], function($) {
@@ -176,5 +185,17 @@ class generate_form extends \moodleform {
                 });
             });
         ";
+    }
+
+    public function definition_after_data() {
+        global $USER;
+        
+        $mform = $this->_form;
+        
+        // Prepare the draft file area
+        $draftitemid = file_get_submitted_draft_itemid('uploadedfile');
+        file_prepare_draft_area($draftitemid, $this->_customdata['context']->id, 'local_aiquiz', 'attachment', 
+            0, array('subdirs' => 0, 'maxfiles' => 1));
+        $mform->setDefault('uploadedfile', $draftitemid);
     }
 }

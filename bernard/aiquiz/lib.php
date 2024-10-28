@@ -86,7 +86,94 @@ function local_aiquiz_extend_settings_navigation($settingsnav, $context) {
 function local_aiquiz_generate_questions($formdata, $quizid) {
     global $DB, $USER, $COURSE;
 
+
     $quiz = $DB->get_record('quiz', array('id' => $quizid), '*', MUST_EXIST);
+    $api_client = new \local_aiquiz\api_client();
+    
+    $topic = '';
+    
+    // Handle file upload if present
+    $draftitemid = file_get_submitted_draft_itemid('uploadedfile');
+    
+    if (!empty($draftitemid)) {
+        $fs = get_file_storage();
+        $context = context_module::instance($formdata->cmid);
+        
+        // Get files from user draft area
+        $usercontext = context_user::instance($USER->id);
+        $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id DESC', false);
+        
+        if (!empty($files)) {
+            $file = reset($files);  // Get the first (and should be only) file
+            $file_name = $file->get_filename();
+            $file_extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+            
+            // Determine API endpoint based on file type
+            $api_endpoint = '';
+            switch($file_extension) {
+                case 'pptx':
+                    $api_endpoint = '/exports/pptx/read';
+                    $file_param_name = 'pptxFile';
+                    break;
+                case 'pdf':
+                    $api_endpoint = '/exports/pdf/read';
+                    $file_param_name = 'pdfFile';
+                    break;
+                case 'docx':
+                    $api_endpoint = '/exports/docx/read';
+                    $file_param_name = 'docxFile';
+                    break;
+                case 'txt': 
+                    $api_endpoint = '/exports/txt/read';
+                    $file_param_name = 'txtFile';
+                    break;
+                default:
+                    return array('error' => get_string('unsupportedfiletype', 'local_aiquiz'));
+            }
+            
+            // Create temporary file
+            $tempdir = make_temp_directory('local_aiquiz');
+            $tempfile = $tempdir . '/' . $file_name;
+            
+            // Save file content to temporary location
+            $success = $file->copy_content_to($tempfile);
+            
+            if ($success) {
+                try {
+                    // Send file to API
+                    $file_content_response = $api_client->read_file_content($api_endpoint, $tempfile, $file_name, $file_param_name);
+                     
+                    
+                    if (isset($file_content_response['text'])) {
+                        $topic = $file_content_response['text'];
+                    } else {
+                        return array('error' => get_string('filereadingerror', 'local_aiquiz', 'Invalid response format'));
+                    }
+                } catch (Exception $e) {
+                    debugging('File upload error: ' . $e->getMessage(), DEBUG_DEVELOPER);
+                    return array('error' => get_string('filereadingerror', 'local_aiquiz', $e->getMessage()));
+                } finally {
+                    // Clean up temporary file
+                    if (file_exists($tempfile)) {
+                        unlink($tempfile);
+                    }
+                }
+            } else {
+                return array('error' => get_string('filecopyerror', 'local_aiquiz'));
+            }
+        }
+    }
+
+    // Append or set manual topic if provided
+    if (!empty($formdata->topic)) {
+        $topic .= (empty($topic) ? '' : "\n\n") . $formdata->topic;
+    }
+
+    if (empty($topic)) {
+        throw new \moodle_exception('notopicprovided', 'local_aiquiz');
+    }
+
+    /*$quiz = $DB->get_record('quiz', array('id' => $quizid), '*', MUST_EXIST);
     $api_client = new \local_aiquiz\api_client();
     
     $topic = '';
@@ -149,7 +236,7 @@ function local_aiquiz_generate_questions($formdata, $quizid) {
 
     if (empty($topic)) {
         throw new \moodle_exception('notopicprovided', 'local_aiquiz');
-    }
+    }*/
 
     // Process dynamic question fields
     $questions = array();
@@ -201,7 +288,7 @@ function local_aiquiz_generate_questions($formdata, $quizid) {
     }
     $metadata->exam_id = $exam_data['exam']['_id'];
     $metadata->question_ids = json_encode($question_ids);
-    $metadata->topic = $topic;
+    $metadata->topic = substr($topic,0,250);
     $metadata->num_questions = $num_questions;
     $metadata->difficulty = $formdata->difficulty;
     $metadata->timestamp = time();
@@ -221,10 +308,6 @@ function local_aiquiz_generate_questions($formdata, $quizid) {
     $quiz->grade = $total_grade;
     // Update the sumgrades attribute to reflect the total of the maximum marks for all questions
     $quiz->sumgrades = $total_grade;
-
-    $quiz->reviewoverallfeedback = 0; // Disable overall feedback.
-    $quiz->reviewgeneralfeedback = 0; // Disable general feedback at all stages.
-    $quiz->reviewspecificfeedback = 0; // Disable specific feedback at all stages.
 
     // Update the quiz record in the database
     $DB->update_record('quiz', $quiz);

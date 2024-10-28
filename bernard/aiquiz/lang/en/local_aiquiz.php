@@ -67,8 +67,8 @@ $string['reason'] = 'Reason';
 $string['aievaluation'] = 'AI Evaluation';
 $string['questionnumber'] = 'Question {$a}';
 $string['youranswer'] = 'Your Answer';  
-$string['aiquizname'] = 'AI Quiz Name'; 
-$string['aiquiztopic'] = 'AI Quiz Content'; 
+$string['aiquizname'] = 'Ai Quiz Name'; 
+$string['aiquiztopic'] = 'Ai Quiz Topic'; 
 
 $string['uploadfile'] = 'Upload File';
 $string['uploadfile_help'] = 'Upload a PPTX, PDF, DOCX, TXT, or VTT file to use as the basis for generating questions.';
@@ -87,5 +87,14 @@ $string['ai_evaluation'] = 'AI Evaluation';
 $string['ai_grade'] = 'AI Grade';
 $string['ai_feedback'] = 'AI Feedback';
 $string['no_ai_evaluation'] = 'No AI evaluation available for this attempt.';
+$string['aiquestions_exist'] = 'This quiz already contains AI-generated questions. You cannot generate additional AI questions. {$a}';
+$string['returntoquiz'] = 'Return to quiz';
+$string['aicommentindicator'] = 'AI Comment:';
+$string['apibadrequest'] = 'The API request was invalid: {$a}';
+$string['apiforbidden'] = 'Access to the API was denied: {$a}';
+$string['apiservererror'] = 'The API server encountered an error: {$a}';
+$string['apiunknownerror'] = 'An unknown API error occurred: {$a}';
+$string['apirequestfailed'] = 'The API request failed: {$a}';
+$string['missingparameters'] = 'Missing required parameters for API request';
 
  

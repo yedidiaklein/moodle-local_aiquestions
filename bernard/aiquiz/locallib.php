@@ -3,6 +3,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 require_once($CFG->dirroot . '/local/aiquiz/classes/api_client.php'); 
+require_once($CFG->dirroot . '/local/aiquiz/classes/api_client_student.php');
 require_once($CFG->dirroot . '/mod/quiz/classes/grade_calculator.php');
 require_once($CFG->dirroot . '/question/engine/lib.php');
 require_once($CFG->dirroot . '/question/type/essay/question.php');
@@ -39,6 +40,7 @@ function aiquiz_get_student_answers($attemptobj) {
             );
         }
     }
+    print_r($answers);
     return $answers;
 }
 
@@ -150,7 +152,7 @@ function aiquiz_evaluate_attempt($attemptid, $auto = false) {
     ];
 
     // Call the API to evaluate the exam
-    $api_client = new \local_aiquiz\api_client();
+    $api_client = new \local_aiquiz\api_client_student();
     try {
         // Update loader progress
         $PAGE->requires->js_amd_inline("
