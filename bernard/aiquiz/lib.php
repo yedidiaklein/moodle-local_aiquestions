@@ -483,3 +483,9 @@ function local_aiquiz_save_essay_options($question_id) {
 
     $DB->insert_record('qtype_essay_options', $options);
 }
+
+
+
+
+
+ 

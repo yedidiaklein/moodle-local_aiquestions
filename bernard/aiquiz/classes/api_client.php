@@ -15,14 +15,14 @@ class api_client {
         global $CFG,$USER;
         require_once($CFG->libdir . '/filelib.php');
 
-        $api_key = get_config('local_aiquiz', 'apikey'); //"nd-668b0c7b118f07c51893efc20b07c5c601745ff93fc826ef92f1899b523c5c4c";//
-        $user_email = get_config('local_aiquiz', 'email'); //"test@studywise.io";//
+        $api_key = get_config('local_aiquiz', 'apikey');  
+        $user_email = $USER->email;//get_config('local_aiquiz', 'email');  
         //debugging('Aapi_key'.$user_email, DEBUG_DEVELOPER);
         if (empty($api_key) || empty($user_email)) {
             throw new \moodle_exception('missingcredentials', 'local_aiquiz', new \moodle_url('/admin/settings.php?section=local_aiquiz'));
         }
 
-         //$USER->email;
+          
 
         $curl = new \curl();
         $headers = [

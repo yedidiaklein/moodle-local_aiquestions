@@ -7,16 +7,18 @@ $observers = array(
         'callback' => '\local_aiquiz\observer::quiz_attempt_submitted',
     ),
     array(
+        'eventname'   => '\core\event\question_updated',
+        'callback'    => '\local_aiquiz\observer::quiz_question_updated',
+        'priority'    => 1000, 
+    ),
+    array(
         'eventname' => '\local_aiquiz\event\comment_page_viewed',
         'callback' => '\local_aiquiz\observers\quiz_comment_observer::inject_content',
     ),
 
-    array(
+    /*array(
         'eventname' => '\core\event\question_updated',
-        'callback' => '\local_aiquiz\observer::question_updated',
-        'internal' => false,
-        'includefile' => '/local/aiquiz/classes/observer.php',
-        'priority' => 1
-    ),
+        'callback' => '\local_aiquiz\observer::question_updated',        
+    ),*/
      
 );
