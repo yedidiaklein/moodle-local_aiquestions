@@ -96,5 +96,27 @@ $string['apiservererror'] = 'The API server encountered an error: {$a}';
 $string['apiunknownerror'] = 'An unknown API error occurred: {$a}';
 $string['apirequestfailed'] = 'The API request failed: {$a}';
 $string['missingparameters'] = 'Missing required parameters for API request';
+$string['syncaiquestions'] = 'Push Edited AI Questions';
+$string['id'] = 'ID';
+$string['examid'] = 'Exam ID';
+$string['questions'] = 'Questions';
+$string['topic'] = 'Topic';
+$string['numquestions'] = 'Number of Questions';
+$string['difficulty'] = 'Difficulty';
+$string['timestamp'] = 'Date';
+$string['actions'] = 'Actions';
+$string['sync'] = 'Sync'; 
+$string['category'] = 'Category';
+$string['question'] = 'Question';
+$string['latestquestionid'] = 'Latest Question ID';
+$string['syncquestions'] = 'Sync Questions';
+$string['questionid'] = 'Question ID';
+$string['name'] = 'Name';
+$string['type'] = 'Type';
+$string['status'] = 'Status';
+$string['actions'] = 'Actions';
+$string['initialversion'] = 'Initial Version';
+$string['latestversion'] = 'Latest Version';
+
 
  

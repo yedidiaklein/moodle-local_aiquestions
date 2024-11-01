@@ -16,7 +16,7 @@ class api_client {
         require_once($CFG->libdir . '/filelib.php');
 
         $api_key = get_config('local_aiquiz', 'apikey');  
-        $user_email = $USER->email;//get_config('local_aiquiz', 'email');  
+        $user_email = $USER->email;//get_config('local_aiquiz', 'email');   //
         //debugging('Aapi_key'.$user_email, DEBUG_DEVELOPER);
         if (empty($api_key) || empty($user_email)) {
             throw new \moodle_exception('missingcredentials', 'local_aiquiz', new \moodle_url('/admin/settings.php?section=local_aiquiz'));
@@ -147,7 +147,7 @@ class api_client {
         ]);
     
         // Make the API request $this->api_base_url . 
-       echo $endpoint = "https://examgenerator-ai-dev-slot.azurewebsites.net/api/v1/exams/{$exam_id}/question/{$question_id}";
+        $endpoint = "https://examgenerator-ai-dev-slot.azurewebsites.net/api/v1/exams/{$exam_id}/question/{$question_id}";
         $response = $curl->put($endpoint, json_encode($question_data));
         
         // Handle response

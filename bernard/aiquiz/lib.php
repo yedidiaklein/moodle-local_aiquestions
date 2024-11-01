@@ -10,6 +10,62 @@ function is_ai_generated_question($questionid) {
     return $DB->record_exists('question', array('id' => $questionid, 'aiquiz_id' => null, 'qtype' => 'essay'));
 }
 
+function local_aiquiz_get_initial_questions($quizid, $DB) {    
+    // First get metadata record
+    $sql = "SELECT m.question_ids
+            FROM {local_aiquiz_metadata} m
+            WHERE m.quiz_id = :quizid";
+    
+    $metadata = $DB->get_record_sql($sql, ['quizid' => $quizid]);
+    
+    if (!$metadata) {
+        return array();
+    }
+
+    // Clean and split question IDs
+    $question_ids = str_replace(['[', ']'], '', $metadata->question_ids);
+    
+    // Get question details
+    $sql = "SELECT q.id, q.name, q.qtype, qv.version
+            FROM {question} q
+            LEFT JOIN {question_versions} qv ON qv.questionid = q.id
+            WHERE q.id IN ({$question_ids})
+            AND qv.version = 1
+            ORDER BY FIND_IN_SET(q.id, '{$question_ids}')";
+
+    return $DB->get_records_sql($sql);
+}
+function local_aiquiz_get_latest_questions($question_id, $DB) {
+    if (empty($question_id)) {
+        return array();
+    }
+
+    // First get the questionbankentryid for initial question
+    $sql1 = "SELECT qv.questionbankentryid 
+             FROM {question_versions} qv 
+             WHERE qv.questionid = :questionid";
+    
+    $bank_entry = $DB->get_record_sql($sql1, ['questionid' => $question_id]);
+    
+    if (empty($bank_entry)) {
+        return array();
+    }
+
+    // Then get the latest question version using that bank entry
+    $sql2 = "SELECT q.*, qv.version, qv.questionbankentryid
+             FROM {question_versions} qv
+             JOIN {question} q ON q.id = qv.questionid
+             WHERE qv.questionbankentryid = :bankentryid
+             AND qv.version = (
+                 SELECT MAX(v2.version)
+                 FROM {question_versions} v2
+                 WHERE v2.questionbankentryid = qv.questionbankentryid
+             )
+             ORDER BY q.id DESC";
+
+    return $DB->get_record_sql($sql2, ['bankentryid' => $bank_entry->questionbankentryid]);
+}
+
 /**
  * Override the question renderer for essay questions
  */
@@ -77,8 +133,21 @@ function local_aiquiz_extend_settings_navigation($settingsnav, $context) {
             'generateaiquestions',
             new pix_icon('t/add', '')
         );
+        // Sync AI Questions link
+        $strsync = get_string('syncaiquestions', 'local_aiquiz');
+        $syncurl = new moodle_url('/local/aiquiz/sync.php', array('cmid' => $PAGE->cm->id));
+        $syncnode = navigation_node::create(
+            $strsync,
+            $syncurl,
+            navigation_node::TYPE_SETTING,
+            'syncaiquestions',
+            'syncaiquestions',
+             
+        );
+
         if ($PAGE->cm->modname === 'quiz') {
             $settingnode->add_node($generatenode);
+            $settingnode->add_node($syncnode);
         }
     }
 }
