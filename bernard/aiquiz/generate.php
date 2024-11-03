@@ -53,7 +53,15 @@ if (has_ai_questions($quiz->id)) {
     exit;
 }
  
-$form = new \local_aiquiz\form\generate_form(null, array('cmid' => $cmid, 'default_name' => $quiz->name));
+//$form = new \local_aiquiz\form\generate_form(
+//    null, array('cmid' => $cmid, 'default_name' => $quiz->name));
+
+
+    $form = new \local_aiquiz\form\generate_form(null, array(
+        'cmid' => $cmid,
+        'context' => $context,
+        'default_name' => $quiz->name
+    ));   
 
 if ($form->is_cancelled()) {
     redirect(new moodle_url('/mod/quiz/edit.php', array('cmid' => $cmid)));

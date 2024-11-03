@@ -46,12 +46,21 @@ class generate_form extends \moodleform
         // Add the text area (initially visible).
         $mform->addElement('textarea', 'topic', get_string('aiquiztopic', 'local_aiquiz'), array('rows' => 5, 'cols' => 60));
         $mform->setType('topic', PARAM_TEXT);
+
+        //$mform->addRule('topic', null, 'required', null, 'client');
         $mform->addHelpButton('topic', 'aiquiztopic', 'local_aiquiz');
 
-        // Add the file upload field (initially hidden).
-        $mform->addElement('filepicker', 'uploadedfile', get_string('uploadfile', 'local_aiquiz'), null, array(
+        // Adding file upload field
+        /*$mform->addElement('filepicker', 'uploadedfile', get_string('uploadfile', 'local_aiquiz'), null, array(
             'maxbytes' => 10485760, // 10MB max
             'accepted_types' => array('.pptx', '.pdf', '.docx', '.txt', '.vtt')
+        ));*/
+
+        $mform->addElement('filemanager', 'uploadedfile', get_string('uploadfile', 'local_aiquiz'), null, array(
+            'maxbytes' => 10485760, // 10MB max
+            'accepted_types' => array('.pptx', '.pdf', '.docx', '.txt', '.vtt'),
+            'maxfiles' => 1,
+            'subdirs' => 0
         ));
         $mform->addHelpButton('uploadedfile', 'uploadfile', 'local_aiquiz');
 
@@ -89,6 +98,8 @@ class generate_form extends \moodleform
 
 
 
+
+        
 
         // Adding the "difficulty" field.
         $difficulties = array(
@@ -208,8 +219,7 @@ class generate_form extends \moodleform
         $PAGE->requires->js_amd_inline($this->get_js_code());
     }
 
-    protected function get_js_code()
-    {
+    protected function get_js_code() {
         return "
             require(['jquery'], function($) {
                 $('#id_submitbutton').click(function() {
@@ -281,5 +291,18 @@ class generate_form extends \moodleform
 
 
         return $errors;
+    }
+}
+
+    public function definition_after_data() {
+        global $USER;
+        
+        $mform = $this->_form;
+        
+        // Prepare the draft file area
+        $draftitemid = file_get_submitted_draft_itemid('uploadedfile');
+        file_prepare_draft_area($draftitemid, $this->_customdata['context']->id, 'local_aiquiz', 'attachment', 
+            0, array('subdirs' => 0, 'maxfiles' => 1));
+        $mform->setDefault('uploadedfile', $draftitemid);
     }
 }

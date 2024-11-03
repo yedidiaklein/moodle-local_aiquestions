@@ -10,6 +10,62 @@ function is_ai_generated_question($questionid) {
     return $DB->record_exists('question', array('id' => $questionid, 'aiquiz_id' => null, 'qtype' => 'essay'));
 }
 
+function local_aiquiz_get_initial_questions($quizid, $DB) {    
+    // First get metadata record
+    $sql = "SELECT m.question_ids
+            FROM {local_aiquiz_metadata} m
+            WHERE m.quiz_id = :quizid";
+    
+    $metadata = $DB->get_record_sql($sql, ['quizid' => $quizid]);
+    
+    if (!$metadata) {
+        return array();
+    }
+
+    // Clean and split question IDs
+    $question_ids = str_replace(['[', ']'], '', $metadata->question_ids);
+    
+    // Get question details
+    $sql = "SELECT q.id, q.name, q.qtype, qv.version
+            FROM {question} q
+            LEFT JOIN {question_versions} qv ON qv.questionid = q.id
+            WHERE q.id IN ({$question_ids})
+            AND qv.version = 1
+            ORDER BY FIND_IN_SET(q.id, '{$question_ids}')";
+
+    return $DB->get_records_sql($sql);
+}
+function local_aiquiz_get_latest_questions($question_id, $DB) {
+    if (empty($question_id)) {
+        return array();
+    }
+
+    // First get the questionbankentryid for initial question
+    $sql1 = "SELECT qv.questionbankentryid 
+             FROM {question_versions} qv 
+             WHERE qv.questionid = :questionid";
+    
+    $bank_entry = $DB->get_record_sql($sql1, ['questionid' => $question_id]);
+    
+    if (empty($bank_entry)) {
+        return array();
+    }
+
+    // Then get the latest question version using that bank entry
+    $sql2 = "SELECT q.*, qv.version, qv.questionbankentryid
+             FROM {question_versions} qv
+             JOIN {question} q ON q.id = qv.questionid
+             WHERE qv.questionbankentryid = :bankentryid
+             AND qv.version = (
+                 SELECT MAX(v2.version)
+                 FROM {question_versions} v2
+                 WHERE v2.questionbankentryid = qv.questionbankentryid
+             )
+             ORDER BY q.id DESC";
+
+    return $DB->get_record_sql($sql2, ['bankentryid' => $bank_entry->questionbankentryid]);
+}
+
 /**
  * Override the question renderer for essay questions
  */
@@ -77,8 +133,21 @@ function local_aiquiz_extend_settings_navigation($settingsnav, $context) {
             'generateaiquestions',
             new pix_icon('t/add', '')
         );
+        // Sync AI Questions link
+        $strsync = get_string('syncaiquestions', 'local_aiquiz');
+        $syncurl = new moodle_url('/local/aiquiz/sync.php', array('cmid' => $PAGE->cm->id));
+        $syncnode = navigation_node::create(
+            $strsync,
+            $syncurl,
+            navigation_node::TYPE_SETTING,
+            'syncaiquestions',
+            'syncaiquestions',
+             
+        );
+
         if ($PAGE->cm->modname === 'quiz') {
             $settingnode->add_node($generatenode);
+            $settingnode->add_node($syncnode);
         }
     }
 }
@@ -86,7 +155,94 @@ function local_aiquiz_extend_settings_navigation($settingsnav, $context) {
 function local_aiquiz_generate_questions($formdata, $quizid) {
     global $DB, $USER, $COURSE;
 
+
     $quiz = $DB->get_record('quiz', array('id' => $quizid), '*', MUST_EXIST);
+    $api_client = new \local_aiquiz\api_client();
+    
+    $topic = '';
+    
+    // Handle file upload if present
+    $draftitemid = file_get_submitted_draft_itemid('uploadedfile');
+    
+    if (!empty($draftitemid)) {
+        $fs = get_file_storage();
+        $context = context_module::instance($formdata->cmid);
+        
+        // Get files from user draft area
+        $usercontext = context_user::instance($USER->id);
+        $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id DESC', false);
+        
+        if (!empty($files)) {
+            $file = reset($files);  // Get the first (and should be only) file
+            $file_name = $file->get_filename();
+            $file_extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+            
+            // Determine API endpoint based on file type
+            $api_endpoint = '';
+            switch($file_extension) {
+                case 'pptx':
+                    $api_endpoint = '/exports/pptx/read';
+                    $file_param_name = 'pptxFile';
+                    break;
+                case 'pdf':
+                    $api_endpoint = '/exports/pdf/read';
+                    $file_param_name = 'pdfFile';
+                    break;
+                case 'docx':
+                    $api_endpoint = '/exports/docx/read';
+                    $file_param_name = 'docxFile';
+                    break;
+                case 'txt': 
+                    $api_endpoint = '/exports/txt/read';
+                    $file_param_name = 'txtFile';
+                    break;
+                default:
+                    return array('error' => get_string('unsupportedfiletype', 'local_aiquiz'));
+            }
+            
+            // Create temporary file
+            $tempdir = make_temp_directory('local_aiquiz');
+            $tempfile = $tempdir . '/' . $file_name;
+            
+            // Save file content to temporary location
+            $success = $file->copy_content_to($tempfile);
+            
+            if ($success) {
+                try {
+                    // Send file to API
+                    $file_content_response = $api_client->read_file_content($api_endpoint, $tempfile, $file_name, $file_param_name);
+                     
+                    
+                    if (isset($file_content_response['text'])) {
+                        $topic = $file_content_response['text'];
+                    } else {
+                        return array('error' => get_string('filereadingerror', 'local_aiquiz', 'Invalid response format'));
+                    }
+                } catch (Exception $e) {
+                    debugging('File upload error: ' . $e->getMessage(), DEBUG_DEVELOPER);
+                    return array('error' => get_string('filereadingerror', 'local_aiquiz', $e->getMessage()));
+                } finally {
+                    // Clean up temporary file
+                    if (file_exists($tempfile)) {
+                        unlink($tempfile);
+                    }
+                }
+            } else {
+                return array('error' => get_string('filecopyerror', 'local_aiquiz'));
+            }
+        }
+    }
+
+    // Append or set manual topic if provided
+    if (!empty($formdata->topic)) {
+        $topic .= (empty($topic) ? '' : "\n\n") . $formdata->topic;
+    }
+
+    if (empty($topic)) {
+        throw new \moodle_exception('notopicprovided', 'local_aiquiz');
+    }
+
+    /*$quiz = $DB->get_record('quiz', array('id' => $quizid), '*', MUST_EXIST);
     $api_client = new \local_aiquiz\api_client();
     
     $topic = '';
@@ -149,7 +305,7 @@ function local_aiquiz_generate_questions($formdata, $quizid) {
 
     if (empty($topic)) {
         throw new \moodle_exception('notopicprovided', 'local_aiquiz');
-    }
+    }*/
 
     // Process dynamic question fields
     $questions = array();
@@ -201,7 +357,7 @@ function local_aiquiz_generate_questions($formdata, $quizid) {
     }
     $metadata->exam_id = $exam_data['exam']['_id'];
     $metadata->question_ids = json_encode($question_ids);
-    $metadata->topic = $topic;
+    $metadata->topic = substr($topic,0,250);
     $metadata->num_questions = $num_questions;
     $metadata->difficulty = $formdata->difficulty;
     $metadata->timestamp = time();
@@ -400,3 +556,9 @@ function local_aiquiz_save_essay_options($question_id) {
 
     $DB->insert_record('qtype_essay_options', $options);
 }
+
+
+
+
+
+ 

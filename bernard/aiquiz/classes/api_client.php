@@ -12,17 +12,17 @@ class api_client {
     }
 
     private function get_access_token() {
-        global $CFG;
+        global $CFG,$USER;
         require_once($CFG->libdir . '/filelib.php');
 
-        $api_key = get_config('local_aiquiz', 'apikey'); //"nd-668b0c7b118f07c51893efc20b07c5c601745ff93fc826ef92f1899b523c5c4c";//
-        $user_email = get_config('local_aiquiz', 'email'); //"test@studywise.io";//
+        $api_key = get_config('local_aiquiz', 'apikey');  
+        $user_email = $USER->email;//get_config('local_aiquiz', 'email');   //
         //debugging('Aapi_key'.$user_email, DEBUG_DEVELOPER);
         if (empty($api_key) || empty($user_email)) {
             throw new \moodle_exception('missingcredentials', 'local_aiquiz', new \moodle_url('/admin/settings.php?section=local_aiquiz'));
         }
 
-         
+          
 
         $curl = new \curl();
         $headers = [
@@ -86,56 +86,7 @@ class api_client {
         
         return $result;
     }
-    private function issue_one_time_token() {
-        $curl = new \curl();
-        /*$curl->setHeader([
-            'X-API-KEY: ' . $this->api_key,
-            'Content-Type: application/json'
-        ]);*/
-
-        $response = $curl->post($this->api_base_url . "/issue-token", json_encode([]));
-        $result = json_decode($response, true);
-
-        if ($result === null && json_last_error() !== JSON_ERROR_NONE) {
-            throw new \moodle_exception('invalidjsonresponse', 'local_aiquiz', '', $response);
-        }
-
-        if (!isset($result['token'])) {
-            throw new \moodle_exception('tokenissuefailed', 'local_aiquiz', '', $response);
-        }
-
-        return $result['token'];
-    }
-
-    public function evaluate_exam($exam_id, $answers, $student_details) {
-        $token = $this->issue_one_time_token();
-
-        $curl = new \curl();
-        $curl->setHeader([
-            'X-Token:' . $token,
-            'Content-Type: application/json'
-        ]);
-
-        $data = [
-            'answers' => $answers,
-            'studentDetails' => $student_details,
-            'allow_auto_grade' => true
-        ];
-        //echo $token.json_encode($data);
-        $response = $curl->post($this->api_base_url . "/exams/{$exam_id}/responses", json_encode($data));
-        //print_r("response from ".$this->api_base_url . "/exams/{$exam_id}/responses ".$response );
-        $result = json_decode($response, true);
-        
-        if ($result === null && json_last_error() !== JSON_ERROR_NONE) {
-            throw new \moodle_exception('invalidjsonresponse', 'local_aiquiz', '', $response);
-        }
-        
-        if (isset($result['error'])) {
-            throw new \moodle_exception('evaluationfailed', 'local_aiquiz', '', $result['error']);
-        }
-        
-        return $result;
-    }
+    
 
     public function read_file_content($endpoint, $file_path, $file_name, $file_param_name) {
         $curl = new \curl();
@@ -143,7 +94,7 @@ class api_client {
         // Set the Authorization header
         $curl->setHeader([
             'Authorization: Bearer ' . $this->access_token,
-            'Content-Type: application/json'
+            //'Content-Type: application/json'
         ]);
     
         //print_r($file_param_name.$file_path.$file_name);
@@ -178,5 +129,50 @@ class api_client {
         $command .= "    -H \"Authorization: Bearer {$token}\" \\\n";
         $command .= "    -F \"{$file_param_name}=@{$file_name}\"";
         return $command;
+    }
+
+
+
+    public function update_question($exam_id, $question_id, $question_data) {
+        if (empty($exam_id) || empty($question_id)) {
+            throw new \moodle_exception('missingparameters', 'local_aiquiz');
+        }
+    
+        $curl = new \curl();
+        
+        // Set headers
+        $curl->setHeader([
+            'Authorization: Bearer ' . $this->access_token,
+            'Content-Type: application/json'
+        ]);
+    
+        // Make the API request $this->api_base_url . 
+        $endpoint = "https://examgenerator-ai-dev-slot.azurewebsites.net/api/v1/exams/{$exam_id}/question/{$question_id}";
+        $response = $curl->put($endpoint, json_encode($question_data));
+        
+        // Handle response
+        if ($curl->get_errno()) {
+            throw new \moodle_exception('apirequestfailed', 'local_aiquiz', '', $curl->error);
+        }
+    
+        $http_code = $curl->get_info()['http_code'];
+        
+        switch ($http_code) {
+            case 200:
+                return json_decode($response, true);
+                
+            case 400:
+                throw new \moodle_exception('apibadrequest', 'local_aiquiz', '', $response);
+                
+            case 403:
+                throw new \moodle_exception('apiforbidden', 'local_aiquiz', '', $response);
+                
+            case 500:
+                throw new \moodle_exception('apiservererror', 'local_aiquiz', '', $response);
+                
+            default:
+                throw new \moodle_exception('apiunknownerror', 'local_aiquiz', '', 
+                    "HTTP Code: $http_code, Response: $response");
+        }
     }
 }
