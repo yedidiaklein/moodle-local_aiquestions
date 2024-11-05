@@ -8,8 +8,10 @@ require_once($CFG->dirroot . '/mod/quiz/classes/grade_calculator.php');
 require_once($CFG->dirroot . '/question/engine/lib.php');
 require_once($CFG->dirroot . '/question/type/essay/question.php');
 require_once($CFG->dirroot . '/question/engine/states.php');
- 
+require_once($CFG->dirroot . '/mod/quiz/classes/structure.php');
 
+
+ 
 function aiquiz_get_student_answers($attemptobj) {
     global $DB;
     $answers = array();
@@ -18,182 +20,189 @@ function aiquiz_get_student_answers($attemptobj) {
         $qa = $attemptobj->get_question_attempt($slot);
         $question = $qa->get_question();
         $answer_object = $qa->get_last_qt_var('answer');
-
+        
+       // Reindex the answers array
         // Extract the actual answer text
         $answer_text = '';
-        if ($answer_object instanceof question_file_loader) {
-            $answer_text = $answer_object->__toString();
-        } elseif (is_object($answer_object) && method_exists($answer_object, 'get_value')) {
-            $answer_text = $answer_object->get_value();
-        } elseif (is_string($answer_object)) {
-            $answer_text = $answer_object;
-        } else {
-            $answer_text = 'Unable to extract answer';
+        
+        switch ($question->qtype->name()) {
+            case 'multichoice':
+                $qa_order = $qa->get_last_qt_var('_order');
+                $order = explode(',', $qa_order);
+
+                 
+
+                if (is_array($answer_object)) {
+                    // Multiple answers selected
+                    $selected_answers = array();
+                    foreach ($answer_object as $key) {
+                        $actual_key = $order[$key];
+                        if (isset($question->answers[$actual_key])) {
+                            $answer = $question->answers[$actual_key]->answer;
+                            $selected_answers[] = strip_tags($answer);
+                             
+                        }
+                    }
+                    $answer_text = implode(', ', $selected_answers);
+                } else {
+                    // Single answer selected
+                    $actual_key = $order[$answer_object];
+                    if (isset($question->answers[$actual_key])) {
+                        $answer_text = strip_tags($question->answers[$actual_key]->answer);
+                         
+                    }
+                }
+                break;
+                
+            case 'match':
+                if (is_array($answer_object)) {
+                    $matched_answers = array();
+                    foreach ($answer_object as $sub_question => $answer_id) {
+                        $sub_q = $qa->get_question()->get_subquestion($sub_question);
+                        $answer = $qa->get_question()->get_right_choice_for($sub_question);
+                        if ($sub_q && $answer) {
+                            $matched_answers[] = strip_tags($sub_q) . ' => ' . strip_tags($answer);
+                        }
+                    }
+                    $answer_text = implode('; ', $matched_answers);
+                }
+                break;
+
+            default:
+                // Handle other question types (essay, short answer, etc.)
+                if ($answer_object instanceof question_file_loader) {
+                    $answer_text = $answer_object->__toString();
+                } elseif (is_object($answer_object) && method_exists($answer_object, 'get_value')) {
+                    $answer_text = $answer_object->get_value();
+                } elseif (is_string($answer_object)) {
+                    $answer_text = $answer_object;
+                } else {
+                    $answer_text = 'Unable to extract answer';
+                }
+                break;
         }
 
-        $quizdata = $DB->get_record('question', array('id' => $question->id, 'qtype' => 'essay'));
-        $clean_answer_text = strip_tags($answer_text);
+        $quizdata = $DB->get_record('question', array('id' => $question->id));
         if (!empty($quizdata->aiquiz_id)) {
+            // Clean and format the answer text
+            $clean_answer_text = trim(strip_tags($answer_text));
+            
             $answers[] = array(
                 'questionId' => $quizdata->aiquiz_id,
                 'answer' => $clean_answer_text
             );
         }
     }
-    print_r($answers);
     return $answers;
 }
-
  
+ 
+
 function aiquiz_evaluate_attempt($attemptid, $auto = false) {
-    global $DB, $OUTPUT, $USER, $PAGE;
-
-    // Add required JavaScript and CSS for loader
-    $PAGE->requires->js_amd_inline("
-        require(['jquery'], function($) {
-            // Add loader styles dynamically
-            $('<style>')
-                .text(`
-                    #aiquiz-loader {
-                        position: fixed;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        background-color: rgba(255, 255, 255, 0.95);
-                        padding: 20px;
-                        border-radius: 5px;
-                        box-shadow: 0 0 10px rgba(0,0,0,0.2);
-                        z-index: 9999;
-                        min-width: 300px;
-                        text-align: center;
-                    }
-                    #aiquiz-progress-container {
-                        width: 100%;
-                        margin: 10px 0;
-                    }
-                    #aiquiz-progress-container .progress {
-                        height: 20px;
-                        margin: 0 auto;
-                    }
-                    #aiquiz-loader-text {
-                        margin: 10px 0;
-                        font-weight: bold;
-                    }
-                `)
-                .appendTo('head');
-
-            // Create and append loader HTML
-            $('body').append(`
-                <div id='aiquiz-loader' style='display:none;'>
-                    <div class='spinner-border text-primary' role='status'>
-                        <span class='sr-only'>Loading...</span>
-                    </div>
-                    <p id='aiquiz-loader-text' class='mt-2'>Evaluating quiz responses...</p>
-                    <div id='aiquiz-progress-container'>
-                        <div class='progress'>
-                            <div id='aiquiz-progress-bar' class='progress-bar' role='progressbar' style='width: 0%'></div>
-                        </div>
-                    </div>
-                </div>
-            `);
-
-            $('#aiquiz-loader').show();
-            
-            window.updateAIQuizProgress = function(percentage, message) {
-                $('#aiquiz-progress-bar').css('width', percentage + '%');
-                if (message) {
-                    $('#aiquiz-loader-text').text(message);
-                }
-            };
-        });
-    ");
-
-    $attemptobj = \mod_quiz\quiz_attempt::create($attemptid);
-    $quizobj = $attemptobj->get_quizobj();
-    $quiz = $attemptobj->get_quiz();
-    $course = $DB->get_record('course', array('id' => $quiz->course), '*', MUST_EXIST);
-    $cm = get_coursemodule_from_instance('quiz', $quiz->id, $course->id, false, MUST_EXIST);
-
-    // Update loader progress
-    $PAGE->requires->js_amd_inline("
-        require(['jquery'], function($) {
-            window.updateAIQuizProgress(10, 'Initializing evaluation...');
-        });
-    ");
-
-    // Get the AI exam ID
-    $metadata = $DB->get_record('local_aiquiz_metadata', array('quiz_id' => $quiz->id));
-    if (!$metadata || empty($metadata->exam_id)) {
-        $PAGE->requires->js_amd_inline("$('#aiquiz-loader').remove();");
-        return false;
-    }
-    $exam_id = $metadata->exam_id;
-
-    // Get the student's answers
-    $answers = aiquiz_get_student_answers($attemptobj);
-
-    // Update loader progress
-    $PAGE->requires->js_amd_inline("
-        require(['jquery'], function($) {
-            window.updateAIQuizProgress(20, 'Processing student answers...');
-        });
-    ");
-
-    if (empty($answers)) {
-        $PAGE->requires->js_amd_inline("$('#aiquiz-loader').remove();");
-        return false;
+    global $DB, $USER;
+    
+    function update_progress($percentage, $message) {
+        echo "<script>
+            var progressBar = document.getElementById('progress-bar');
+            var messageText = document.querySelector('.loader-text');
+            if (progressBar) {
+                progressBar.style.width = '$percentage%';
+                progressBar.style.transition = 'width 0.5s ease';
+            }
+            if (messageText) {
+                messageText.textContent = '$message';
+            }
+        </script>";
+        flush();
+        ob_flush();
     }
 
-    $user = $DB->get_record('user', array('id' => $attemptobj->get_userid()), '*', MUST_EXIST);
-    $student_details = [
-        'fullName' => fullname($user),
-        'id' => $user->id,
-        'email' => $user->email
-    ];
-
-    // Call the API to evaluate the exam
-    $api_client = new \local_aiquiz\api_client_student();
     try {
-        // Update loader progress
-        $PAGE->requires->js_amd_inline("
-            require(['jquery'], function($) {
-                window.updateAIQuizProgress(40, 'Evaluating answers using AI...');
-            });
-        ");
+        $attemptobj = \mod_quiz\quiz_attempt::create($attemptid);
+        $attemptobj = \mod_quiz\quiz_attempt::create($attemptid);
+        $quizobj = $attemptobj->get_quizobj();
+        $quiz = $attemptobj->get_quiz();
+        $course = $DB->get_record('course', array('id' => $quiz->course), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('quiz', $quiz->id, $course->id, false, MUST_EXIST);
+        $uniqueid = $attemptobj->get_attempt()->uniqueid;
 
-        $api_response = $api_client->evaluate_exam($exam_id, $answers, $student_details);
-        
-        if (!isset($api_response['response']) || !isset($api_response['response']['answers'])) {
-            $PAGE->requires->js_amd_inline("$('#aiquiz-loader').remove();");
+        // Update progress
+        $progress_script = "<script>
+            var loader = document.getElementById('aiquiz-loader');
+            if (loader) {
+                var bar = loader.querySelector('.progress-bar');
+                var status = loader.querySelector('.status');
+                if (bar && status) {
+                    bar.style.width = '%d%%';
+                    status.textContent = '%s';
+                }
+            }
+        </script>";
+
+        // Initialize evaluation
+        update_progress(10, 'Initializing evaluation...');
+
+        // Get the AI exam ID
+        $metadata = $DB->get_record('local_aiquiz_metadata', array('quiz_id' => $quiz->id));
+        if (!$metadata || empty($metadata->exam_id)) {
+            echo "<script>
+                var overlay = document.getElementById('loading-overlay');
+                overlay.style.opacity = '0';
+                setTimeout(function() { overlay.remove(); }, 500);
+            </script>";
             return false;
         }
         
-        $evaluation_result = $api_response['response'];
+         
         
-        // Update loader progress
-        $PAGE->requires->js_amd_inline("
-            require(['jquery'], function($) {
-                window.updateAIQuizProgress(60, 'Processing evaluation results...');
-            });
-        ");
+        // Get answers
+        $answers = aiquiz_get_student_answers($attemptobj);
+        if (empty($answers)) {
+            return false;
+        }
+
+         
+
+        $user = $DB->get_record('user', array('id' => $attemptobj->get_userid()), '*', MUST_EXIST);
+        $student_details = [
+            'fullName' => fullname($user),
+            'id' => $user->id,
+            'email' => $user->email
+        ];
+
+        // Call API
+        $api_client = new \local_aiquiz\api_client_student();
+        $api_response = $api_client->evaluate_exam($metadata->exam_id, $answers, $student_details);
+        
+        if (!isset($api_response['response']) || !isset($api_response['response']['answers'])) {
+            throw new \moodle_exception('Invalid API response');
+        }
+
+        $evaluation_result = $api_response['response']; 
 
         $total_questions = count($evaluation_result['answers']);
-        $current_question = 0;
+        
+        foreach ($evaluation_result['answers'] as $index => $answer) {
+            $progress = 60 + (($index + 1) / $total_questions * 30);
+            update_progress($progress, "Processing question " . ($index + 1) . " of $total_questions");
 
-        foreach ($evaluation_result['answers'] as $answer) {
-            $current_question++;
-            $progress = 60 + ($current_question / $total_questions * 30);
-            
-            // Update loader progress for each question
-            $PAGE->requires->js_amd_inline("
-                require(['jquery'], function($) {
-                    window.updateAIQuizProgress($progress, 'Processing question $current_question of $total_questions...');
-                });
-            ");
+            $sql = "SELECT q.*, qa.id as questionattemptid
+                FROM {question} q
+                JOIN {question_attempts} qa ON qa.questionid = q.id
+                WHERE q.aiquiz_id = :questionid 
+                AND qa.questionusageid = :questionusageid";
 
-            $question = $DB->get_record('question', array('aiquiz_id' => $answer['question_id']), '*', MUST_EXIST);
-            
-            // Find the slot number for this question
+            $params = array(
+                'questionid' => $answer['question_id'],
+                'questionusageid' => $uniqueid
+            );
+
+            $question = $DB->get_record_sql($sql, $params);
+            if (!$question) {
+                continue;
+            }
+
+            // Process the question grading
             $slot = null;
             foreach ($attemptobj->get_slots() as $qslot) {
                 if ($attemptobj->get_question_attempt($qslot)->get_question()->id == $question->id) {
@@ -203,14 +212,11 @@ function aiquiz_evaluate_attempt($attemptid, $auto = false) {
             }
             
             if (!$slot) {
-                mtrace("Slot not found for question ID: {$answer['question_id']}");
                 continue;
             }
             
             $qa = $attemptobj->get_question_attempt($slot);
-            $questionattemptid = $qa->get_database_id();
             if (!$qa) {
-                mtrace("Question attempt not found for question ID: {$answer['question_id']}");
                 continue;
             }
 
@@ -221,63 +227,63 @@ function aiquiz_evaluate_attempt($attemptid, $auto = false) {
             $fraction = max(0, min(1, $fraction));
             $comment = isset($answer['teacher_feedback']) ? $answer['teacher_feedback'] : '';
 
-            mtrace("Updating question {$answer['question_id']}: Grade = $grade / $max_mark (Fraction: $fraction)");
-            custom_manual_grade($questionattemptid, $question->id, $comment, $fraction, $max_mark, $USER->id);
+            custom_manual_grade($qa->get_database_id(), $question->id, $comment, $fraction, $max_mark, $USER->id);
         }
 
-        // Recalculate the overall grade
+        // Update grades
         $quizobj = \mod_quiz\quiz_settings::create($quiz->id);
         $grade_calculator = \mod_quiz\grade_calculator::create($quizobj);
         $grade_calculator->recompute_final_grade($attemptobj->get_userid());
-
-        // Update quiz grades in gradebook
         quiz_update_grades($quiz, $attemptobj->get_userid());
 
-        // Update loader for completion
-        $PAGE->requires->js_amd_inline("
-            require(['jquery'], function($) {
-                window.updateAIQuizProgress(100, 'Evaluation completed successfully!');
-                setTimeout(function() {
-                    $('#aiquiz-loader').fadeOut('slow', function() {
-                        $(this).remove();
-                    });
-                }, 1000);
-            });
-        ");
-
-        // Trigger the attempt_reviewed event
-        $params = array(
-            'objectid' => $attemptobj->get_attemptid(),
-            'relateduserid' => $attemptobj->get_userid(),
-            'courseid' => $course->id,
-            'context' => \context_module::instance($cm->id),
-            'other' => array(
-                'quizid' => $quiz->id
-            )
-        );
-        $event = \mod_quiz\event\attempt_reviewed::create($params);
-        $event->trigger();
+        // Final updates
+        update_progress(100, 'Evaluation completed successfully!');
+        
+        // Smooth removal of the overlay
+        echo "<script>
+            setTimeout(function() {
+                var overlay = document.getElementById('loading-overlay');
+                if (overlay) {
+                    overlay.style.opacity = '0';
+                    overlay.style.transition = 'opacity 0.5s ease';
+                    setTimeout(function() { overlay.remove(); }, 500);
+                }
+            }, 1000);
+        </script>";
 
         return $evaluation_result;
 
     } catch (\Exception $e) {
-        $PAGE->requires->js_amd_inline("
-            require(['jquery'], function($) {
-                $('#aiquiz-loader-text').text('Error: " . addslashes($e->getMessage()) . "');
-                $('#aiquiz-progress-bar').addClass('bg-danger');
-                setTimeout(function() {
-                    $('#aiquiz-loader').fadeOut('slow', function() {
-                        $(this).remove();
-                    });
-                }, 3000);
-            });
-        ");
-        mtrace("AIQuiz evaluation failed for attempt $attemptid: " . $e->getMessage());
+        // Handle error display
+        echo "<script>
+            var messageText = document.querySelector('.loader-text');
+            var progressBar = document.getElementById('progress-bar');
+            var spinner = document.querySelector('.loader-spinner');
+            if (messageText) {
+                messageText.style.animation = 'none';
+                messageText.style.color = '#ff4444';
+                messageText.textContent = 'Error: " . addslashes($e->getMessage()) . "';
+            }
+            if (progressBar) {
+                progressBar.style.width = '100%';
+                progressBar.style.backgroundColor = '#ff4444';
+            }
+            if (spinner) {
+                spinner.style.borderTopColor = '#ff4444';
+            }
+            setTimeout(function() {
+                var overlay = document.getElementById('loading-overlay');
+                if (overlay) {
+                    overlay.style.opacity = '0';
+                    overlay.style.transition = 'opacity 0.5s ease';
+                    setTimeout(function() { overlay.remove(); }, 500);
+                }
+            }, 3000);
+        </script>";
+        
         return false;
     }
 }
-
-
 function custom_manual_grade($attemptid, $questionid, $comment, $fraction, $max_mark, $graderid = null) {
     global $DB, $USER;
 
@@ -334,7 +340,14 @@ function custom_manual_grade($attemptid, $questionid, $comment, $fraction, $max_
         $stepdata = new stdClass();
         $stepdata->questionattemptid = $attemptid;
         $stepdata->sequencenumber = $new_seq;
-        $stepdata->state = 'mangrright';  // Use 'mangrright' for correct answers, 'mangrwrong' for incorrect
+        //$stepdata->state = 'mangrright';  // Use 'mangrright' for correct answers, 'mangrwrong' for incorrect
+        if ($fraction == 1.0) {
+            $stepdata->state = 'mangrright';  // Completely correct
+        } elseif ($fraction == 0.0) {
+            $stepdata->state = 'mangrwrong';  // Completely wrong
+        } else {
+            $stepdata->state = 'mangrpartial';  // Partially correct
+        }
         $stepdata->fraction = $fraction;
         $stepdata->userid = $graderid;
         $stepdata->timecreated = time();
@@ -559,7 +572,7 @@ function aiquiz_question_updated($questionid) {
 
 
 
-function aiquiz_question_sync($questionid,$initialquestionid) {
+function aiquiz_question_sync_or($questionid,$initialquestionid) {
     global $DB, $USER, $CFG;
 
     $logFilePath = $CFG->dataroot . '/aiquiz_debug.log';
@@ -674,7 +687,7 @@ function aiquiz_question_sync($questionid,$initialquestionid) {
         }
 
         //debugging("Sending API request with data: " . json_encode($api_data), DEBUG_DEVELOPER);
-
+        print_r($api_data);
         // Call API to update question
         $response = $api_client->update_question($metadata->exam_id, $question->aiquiz_id, $api_data);
         
@@ -684,6 +697,144 @@ function aiquiz_question_sync($questionid,$initialquestionid) {
         return true;
     } catch (\Exception $e) {
         //debugging("API Error: " . $e->getMessage(), DEBUG_DEVELOPER);
+        return false;
+    }
+}
+
+function aiquiz_question_sync($questionid, $initialquestionid) {
+    global $DB, $USER, $CFG;
+
+    $logFilePath = $CFG->dataroot . '/aiquiz_debug.log';
+    //echo $message = "question with ID {$questionid} performed an action at " . date('Y-m-d H:i:s');
+    //error_log($message . PHP_EOL, 3, $logFilePath);
+    
+    $question = $DB->get_record('question', array('id' => $questionid));
+    if (!$question) {
+        return false;
+    }
+
+    if (empty($question->aiquiz_id)) {
+        return false;
+    }
+
+    // Get metadata
+    $sql = "SELECT * FROM {local_aiquiz_metadata} 
+            WHERE question_ids LIKE :questionpattern";
+    $pattern = '%' . $initialquestionid . '%';
+    $metadata = $DB->get_record_sql($sql, array('questionpattern' => $pattern));
+    //print_r($metadata);
+    try {
+        // Update metadata if needed
+        if ($metadata) {
+            $question_ids = json_decode($metadata->question_ids, true);
+            if (!in_array($questionid, $question_ids)) {
+                $question_ids[] = (int)$questionid;
+                $metadata->question_ids = '[' . implode(',', $question_ids) . ']';
+                $DB->update_record('local_aiquiz_metadata', $metadata);
+            }
+        }
+
+        // Initialize API client
+        $api_client = new \local_aiquiz\api_client();
+
+        // Get the latest grade
+        $sql = "SELECT qs.maxmark
+        FROM {quiz_slots} qs
+        JOIN {question_references} qr ON qr.itemid = qs.id AND qr.component = 'mod_quiz' AND qr.questionarea = 'slot'
+        JOIN {question_bank_entries} qbe ON qbe.id = qr.questionbankentryid
+        JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
+        JOIN {question} q ON q.id = qv.questionid
+        WHERE qs.quizid = :quizid 
+        AND q.id = :questionid";
+
+        $params = ['quizid' => $metadata->quiz_id, 'questionid' => $questionid];
+        $maxmark = $DB->get_field_sql($sql, $params);
+        
+        
+        //print_r($sql.$grade_record);
+        // Initialize the API data structure exactly as specified
+        $api_data = array(
+            'question' => array(
+                'question' => clean_param($question->questiontext, PARAM_TEXT)
+            )
+        );
+       
+
+         
+        //print_r("grade_record ".$maxmark);
+        // Add grade if available
+        if ($maxmark) {
+            
+            $api_data['question']['grade'] = floatval(round($maxmark, 2)); // Convert to number
+        }
+
+        // Handle different question types
+        switch ($question->qtype) {
+            case 'multichoice':
+                $answers = $DB->get_records('question_answers', 
+                    array('question' => $questionid), 
+                    'id ASC'
+                );
+                
+                if ($answers) {
+                    $options = array();
+                    $correct_answers = array();
+                    
+                    foreach ($answers as $answer) {
+                        $clean_answer = clean_param($answer->answer, PARAM_TEXT);
+                        $options[] = $clean_answer;
+                        if ($answer->fraction > 0) {
+                            $correct_answers[] = $clean_answer;
+                        }
+                    }
+                    
+                    $api_data['question']['options'] = $options;
+                    $api_data['question']['correctAnswers'] = $correct_answers;
+                }
+                break;
+
+            case 'shortanswer':
+                $answers = $DB->get_records('question_answers', 
+                    array('question' => $questionid)
+                );
+                
+                if ($answers) {
+                    $correct_answers = array();
+                    foreach ($answers as $answer) {
+                        $correct_answers[] = clean_param($answer->answer, PARAM_TEXT);
+                    }
+                    $api_data['question']['correctAnswers'] = $correct_answers;
+                }
+                break;
+
+            case 'essay':
+                $essay_options = $DB->get_record('qtype_essay_options', 
+                    array('questionid' => $questionid)
+                );
+                
+                if ($essay_options) {
+                    if (!empty($essay_options->graderinfo)) {
+                        $api_data['question']['explanation'] = clean_param($essay_options->graderinfo, PARAM_TEXT);
+                    }
+                    if (!empty($question->generalfeedback)) {
+                        $api_data['question']['indicator'] = clean_param($question->generalfeedback, PARAM_TEXT);
+                    }
+                }
+                break;
+        }
+
+        // Log the API data for debugging
+        //error_log("API Data: " . json_encode($api_data) . PHP_EOL, 3, $logFilePath);
+
+        //print_r($api_data);
+
+        // Call API to update question
+        $response = $api_client->update_question($metadata->exam_id, $question->aiquiz_id, $api_data);
+        
+        return true;
+    } catch (\Exception $e) {
+        //print_r($e->getMessage());
+        error_log("API Error: " . $e->getMessage() . PHP_EOL, 3, $logFilePath);
         return false;
     }
 }

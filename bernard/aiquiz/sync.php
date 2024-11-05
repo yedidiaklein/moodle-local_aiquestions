@@ -31,8 +31,7 @@ $table->head = array(
     get_string('questionid', 'local_aiquiz'),
     get_string('name', 'local_aiquiz'),
     get_string('type', 'local_aiquiz'),
-    get_string('status', 'local_aiquiz'),
-    get_string('actions', 'local_aiquiz')
+    get_string('status', 'local_aiquiz') 
 );
 
 // Display questions
@@ -52,8 +51,7 @@ if (!empty($initial_questions)) {
             format_string($initial->name),
             get_string('pluginname', 'qtype_' . $initial->qtype),
             html_writer::tag('span', get_string('initialversion', 'local_aiquiz'), 
-                array('class' => 'badge badge-info')),
-            $initial_preview_link
+                array('class' => 'badge badge-info')) 
         );
 
         
@@ -66,9 +64,9 @@ if (!empty($initial_questions)) {
              FROM {local_aiquiz_metadata} m 
              WHERE m.quiz_id = :quizid 
              AND FIND_IN_SET(:questionid, m.question_ids)",
-            ['quizid' => $cm->instance, 'questionid' => $latest->id]
+            ['quizid' => $cm->instance, 'questionid' => $initial ->id]
         );
-    
+        //print_r($metadata);
         // Only display if latest question is NOT in metadata
         if (empty($metadata)) {
             aiquiz_question_sync($latest->id,$initial->id);
@@ -88,8 +86,7 @@ if (!empty($initial_questions)) {
                 get_string('pluginname', 'qtype_' . $latest->qtype),
                 html_writer::tag('span', 
                     get_string('latestversion', 'local_aiquiz') . ' (v' . $latest->version . ')', 
-                    array('class' => 'badge badge-success')),
-                $latest_preview_link
+                    array('class' => 'badge badge-success')) 
             );
         }
 
@@ -103,3 +100,5 @@ if (!empty($initial_questions)) {
 
 echo html_writer::table($table);
 echo $OUTPUT->footer();
+
+ 

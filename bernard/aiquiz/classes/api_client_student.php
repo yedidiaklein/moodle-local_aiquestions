@@ -49,9 +49,10 @@ class api_client_student {
             'studentDetails' => $student_details,
             'allow_auto_grade' => true
         ];
+        //print_r("request ".json_encode($data));
         //echo $token.json_encode($data);
         $response = $curl->post($this->api_base_url . "/exams/{$exam_id}/responses", json_encode($data));
-        //print_r("response from ".$this->api_base_url . "/exams/{$exam_id}/responses ".$response );
+        //print_r("response ".$response );
         $result = json_decode($response, true);
         
         if ($result === null && json_last_error() !== JSON_ERROR_NONE) {

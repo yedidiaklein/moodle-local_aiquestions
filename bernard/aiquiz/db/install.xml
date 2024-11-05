@@ -33,4 +33,12 @@
       </KEYS>
     </TABLE>
   </TABLES>
+
+  <EXTENDS>
+    <TABLE NAME="question">
+      <FIELDS>
+        <FIELD NAME="aiquiz_id" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="null" SEQUENCE="false"/>
+      </FIELDS>
+    </TABLE>
+  </EXTENDS>
 </XMLDB>

@@ -147,9 +147,12 @@ class api_client {
         ]);
     
         // Make the API request $this->api_base_url . 
+
+
+        
         $endpoint = "https://examgenerator-ai-dev-slot.azurewebsites.net/api/v1/exams/{$exam_id}/question/{$question_id}";
         $response = $curl->put($endpoint, json_encode($question_data));
-        
+        //print_r($endpoint.json_encode($question_data).$response);
         // Handle response
         if ($curl->get_errno()) {
             throw new \moodle_exception('apirequestfailed', 'local_aiquiz', '', $curl->error);
