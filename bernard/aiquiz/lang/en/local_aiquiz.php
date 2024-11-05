@@ -2,6 +2,8 @@
 $string['pluginname'] = 'AI Quiz Generator';
 $string['generateaiquestions'] = 'Generate AI Questions';
 $string['exam_params'] = 'Exam Parameters';
+$string['chooseinputtype'] = 'Choose Input Type';
+$string['textinput'] = 'Choose Input Type';
 $string['apikey'] = 'API Key';
 $string['apikeydesc'] = 'Enter your API key for the AI question generation service';
 $string['topic'] = 'Topic';
@@ -59,11 +61,11 @@ $string['evaluationplaceholder'] = 'AI evaluation will be implemented here.';
 $string['evaluatewithai'] = 'Evaluate with AI';
 $string['evaluationresults'] = 'Evaluation Results';
 $string['question'] = 'Question';
-$string['studentanswer'] = 'Student Answer'; 
+$string['studentanswer'] = 'Student Answer';
 $string['indicatorbreakdown'] = 'Indicator Breakdown';
 $string['allocated'] = 'Allocated';
 $string['awarded'] = 'Awarded';
-$string['reason'] = 'Reason'; 
+$string['reason'] = 'Reason';
 $string['aievaluation'] = 'AI Evaluation';
 $string['questionnumber'] = 'Question {$a}';
 $string['youranswer'] = 'Your Answer';  
@@ -118,5 +120,3 @@ $string['actions'] = 'Actions';
 $string['initialversion'] = 'Initial Version';
 $string['latestversion'] = 'Latest Version';
 
-
- 
