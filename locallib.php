@@ -40,9 +40,17 @@ function local_aiquestions_get_questions($data) {
 
     $key = get_config('local_aiquestions', 'key');
     $model = get_config('local_aiquestions', 'model');
+    $provider = get_config('local_aiquestions', 'provider'); // OpenAI (default) or Azure
+    
+    if ($provider === 'Azure') {
+    // If the provider is Azure, use the Azure API endpoint and Azure-specific HTTP header
+    $url = get_config('local_aiquestions', 'azure_api_endpoint'); // Use the Azure API endpoint from settings
+    $authorization = "api-key: " . $key;
+} else {
+    // If the provider is not Azure, use the OpenAI API URL and OpenAI style HTTP header
     $url = 'https://api.openai.com/v1/chat/completions';
     $authorization = "Authorization: Bearer " . $key;
-
+}
     // Remove new lines and carriage returns.
     $story = str_replace("\n", " ", $data->story);
     $story = str_replace("\r", " ", $story);
@@ -58,7 +66,7 @@ function local_aiquestions_get_questions($data) {
             {"role": "system", "name":"example_user", "content": "' . $instructions . '"},
             {"role": "system", "name": "example_assistant", "content": "' . $example . '"},
             {"role": "user", "content": "Now, create ' . $data->numofquestions . ' questions for me based on this topic: ' . local_aiquestions_escape_json($story) . '"}
-            ]}';
+	    ]}';
 
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , $authorization ));
@@ -88,9 +96,10 @@ function local_aiquestions_get_questions($data) {
  * @param string $gift questions in GIFT format
  * @param int $numofquestions number of questions to generate
  * @param int $userid user id
+ * @param bool $addidentifier add an GPT prefix to question names 
  * @return array of objects of created questions
  */
-function local_aiquestions_create_questions($courseid, $category, $gift, $numofquestions, $userid) {
+function local_aiquestions_create_questions($courseid, $category, $gift, $numofquestions, $userid, $addidentifier) {
     global $CFG, $USER, $DB;
 
     require_once($CFG->libdir . '/questionlib.php');
@@ -145,7 +154,9 @@ function local_aiquestions_create_questions($courseid, $category, $gift, $numofq
         $q->timemodified = time();
         $q->questiontext = ['text' => "<p>" . $questiontext . "</p>"];
         $q->questiontextformat = 1;
-
+        if ($addidentifier == 1) {
+            $q->name = "GPT-created: " . $q->name; // Adds a "watermark" to the question
+        }
         $created = question_bank::get_qtype($qtype)->save_question($q, $q);
         $createdquestions[] = $created;
     }

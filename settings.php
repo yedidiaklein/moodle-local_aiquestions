@@ -28,6 +28,28 @@ defined('MOODLE_INTERNAL') || die();
 if ($hassiteconfig) {
     $settings = new admin_settingpage('local_aiquestions_settings', new lang_string('pluginname', 'local_aiquestions'));
 
+    // Language model provider.
+    $provideroptions = ['OpenAI' => 'OpenAI',
+                'Azure' => 'Azure'
+                ];
+    $settings->add( new admin_setting_configselect(
+        'local_aiquestions/provider',
+        get_string('provider', 'local_aiquestions'),
+        get_string('providerdesc', 'local_aiquestions'),
+        'OpenAI',
+        $provideroptions,
+    ));
+
+    // Azure endpoint.
+
+    $settings->add(new admin_setting_configtext(
+    'local_aiquestions/azure_api_endpoint',
+    get_string('azureapiendpoint', 'local_aiquestions'),
+    get_string('azureapiendpointdesc', 'local_aiquestions'),
+    '', PARAM_URL
+    ));
+
+
     // OpenAI key.
     $settings->add( new admin_setting_configpasswordunmask(
         'local_aiquestions/key',

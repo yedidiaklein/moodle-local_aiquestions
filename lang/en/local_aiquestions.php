@@ -33,10 +33,14 @@ $string['privacy:metadata'] = 'AI text to questions generator does not store any
 $string['aiquestions'] = 'AI Questions';
 
 // Settings page.
-$string['openaikey'] = 'OpenAI API key';
-$string['openaikeydesc'] = 'You can get your API key from <a href="https://platform.openai.com/account/api-keys">https://platform.openai.com/account/api-keys</a><br>
+$string['provider'] = 'GPT provider';
+$string['providerdesc'] = 'Select if you are using Azure of OpenAI';
+$string['azureapiendpoint'] = 'Azure API Endpoint';
+$string['azureapiendpointdesc'] = 'Enter the Azure API endpoint URL here';
+$string['openaikey'] = 'OpenAI or Azure API key';
+$string['openaikeydesc'] = 'You can get an OpenAI API key from <a href="https://platform.openai.com/account/api-keys">https://platform.openai.com/account/api-keys</a><br>
 Select the "+ Create New Secret Key" button and copy the key to this field.<br>
-Note that you need to have an OpenAI account that include billing settings to get an API key.';
+Note that you need to have an OpenAI account that includes billing settings to get an API key.';
 $string['model'] = 'Model';
 $string['model_desc'] = 'Language model to use. <a href="https://platform.openai.com/docs/models/">More info</a>.';
 $string['presetname'] = 'Preset name';
@@ -55,6 +59,7 @@ $string['shareyourprompts'] = 'You can find more prompt ideas or share yours at 
 // Story form.
 $string['category'] = 'Question category';
 $string['category_help'] = 'If the category selection is empty, open the question bank for this course once.';
+$string['addidentifier'] = 'Add a "GPT-created: " prefix to the question name';
 $string['editpreset'] = 'Edit the preset before sending it to the AI';
 $string['primer'] = 'Primer';
 $string['primer_help'] = 'The primer is the first information to be sent to the AI, priming it for its task.';

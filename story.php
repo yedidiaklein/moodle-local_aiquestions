@@ -74,6 +74,7 @@ if ($mform->is_cancelled()) {
                                 'example' => $data->$example,
                                 'story' => $data->story,
                                 'numofquestions' => $data->numofquestions,
+                                'addidentifier' => $data->addidentifier,
                                 'courseid' => $data->courseid,
                                 'userid' => $USER->id,
                                 'uniqid' => $uniqid ]);
