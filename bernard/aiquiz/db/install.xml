@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/aiquiz/db" VERSION="20230515" COMMENT="XMLDB file for AI Quiz local plugin"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="local_aiquiz_metadata" COMMENT="Stores metadata for AI-generated quizzes">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="quiz_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="exam_id" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="question_ids" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="topic" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="num_questions" TYPE="int" LENGTH="5" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="difficulty" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="quiz_id" TYPE="foreign" FIELDS="quiz_id" REFTABLE="quiz" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    
+    <TABLE NAME="local_aiquiz_question_data" COMMENT="Stores AI-specific data for questions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="aiquestion_id" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="questionid" TYPE="foreign" FIELDS="questionid" REFTABLE="question" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+
+  <EXTENDS>
+    <TABLE NAME="question">
+      <FIELDS>
+        <FIELD NAME="aiquiz_id" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="null" SEQUENCE="false"/>
+      </FIELDS>
+    </TABLE>
+  </EXTENDS>
+</XMLDB>
