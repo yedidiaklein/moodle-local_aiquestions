@@ -75,7 +75,7 @@ class questions extends \core\task\adhoc_task {
         $error = ''; // Error message.
         $update = new \stdClass();
 
-        echo "[local_aiquestions] Creating Questions via OpenAI...\n";
+        echo "[local_aiquestions] Creating Questions via Moodle AI subsystem...\n";
         echo "[local_aiquestions] Try $i of $numoftries...\n";
 
         while (!$created && $i <= $numoftries) {
@@ -86,12 +86,12 @@ class questions extends \core\task\adhoc_task {
             $update->datemodified = time();
             $DB->update_record('local_aiquestions', $update);
 
-            // Get questions from ChatGPT API.
+            // Get questions from AI API via Moodle's AI subsystem.
             $questions = \local_aiquestions_get_questions($data);
 
-            // Print error message of ChatGPT API (if there are).
-            if (isset($questions->error->message)) {
-                $error .= $questions->error->message;
+            // Print error message from AI API (if there are).
+            if (isset($questions->error)) {
+                $error .= $questions->error;
 
                 // Print error message to cron/adhoc output.
                 echo "[local_aiquestions] Error : $error.\n";
@@ -102,7 +102,12 @@ class questions extends \core\task\adhoc_task {
                 if (\local_aiquestions_check_gift($questions->text)) {
 
                     // Create the questions, return an array of objetcs of the created questions.
-                    $created = \local_aiquestions_create_questions($courseid, $category, $questions->text, $numofquestions, $userid, $addidentifier);
+                    $created = \local_aiquestions_create_questions($courseid,
+                                                                   $category,
+                                                                   $questions->text,
+                                                                   $numofquestions,
+                                                                   $userid,
+                                                                   $addidentifier);
                     $j = 0;
                     foreach ($created as $question) {
                         $success[$j]['id'] = $question->id;

@@ -25,32 +25,19 @@
 
 
 /**
- * Get questions from the API.
+ * Get questions from the API using Moodle's AI subsystem.
  *
  * @param object data data to create questions from
  * @return object questions of generated questions
  */
 function local_aiquestions_get_questions($data) {
 
-    global $CFG;
+    global $CFG, $USER;
 
     // Build primer.
     $primer = $data->primer;
     $primer .= "Write $data->numofquestions questions.";
 
-    $key = get_config('local_aiquestions', 'key');
-    $model = get_config('local_aiquestions', 'model');
-    $provider = get_config('local_aiquestions', 'provider'); // OpenAI (default) or Azure
-    
-    if ($provider === 'Azure') {
-    // If the provider is Azure, use the Azure API endpoint and Azure-specific HTTP header
-    $url = get_config('local_aiquestions', 'azure_api_endpoint'); // Use the Azure API endpoint from settings
-    $authorization = "api-key: " . $key;
-} else {
-    // If the provider is not Azure, use the OpenAI API URL and OpenAI style HTTP header
-    $url = 'https://api.openai.com/v1/chat/completions';
-    $authorization = "Authorization: Bearer " . $key;
-}
     // Remove new lines and carriage returns.
     $story = str_replace("\n", " ", $data->story);
     $story = str_replace("\r", " ", $story);
@@ -59,31 +46,28 @@ function local_aiquestions_get_questions($data) {
     $example = str_replace("\n", " ", $data->example);
     $example = str_replace("\r", " ", $example);
 
-    $data = '{
-        "model": "' . $model . '",
-        "messages": [
-            {"role": "system", "content": "' . $primer . '"},
-            {"role": "system", "name":"example_user", "content": "' . $instructions . '"},
-            {"role": "system", "name": "example_assistant", "content": "' . $example . '"},
-            {"role": "user", "content": "Now, create ' . $data->numofquestions . ' questions for me based on this topic: ' . local_aiquestions_escape_json($story) . '"}
-	    ]}';
+    // Build the complete prompt for Moodle's AI subsystem.
+    $prompttext = $primer . "\n\n";
+    $prompttext .= "Instructions: " . $instructions . "\n\n";
+    $prompttext .= "Example: " . $example . "\n\n";
+    $prompttext .= "Now, create " . $data->numofquestions . " questions for me based on this topic: " . $story;
 
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , $authorization ));
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 2000);
-    $result = json_decode(curl_exec($ch));
-    curl_close($ch);
+    // Get the context - use system context if no specific context is available.
+    $contextid = context_system::instance()->id;
+
+    // Use Moodle's AI subsystem to generate questions.
+    $aianswer = new \local_aiquestions\sendtoai();
+    $result = $aianswer->execute($contextid, $prompttext);
 
     $questions = new stdClass(); // The questions object.
-    if (isset($result->choices[0]->message->content)) {
-        $questions->text = $result->choices[0]->message->content;
+    if ($result['success']) {
+        $questions->text = $result['generatedcontent'];
         $questions->prompt = $story;
     } else {
-        $questions = $result;
+        // Handle error case.
+        $questions = new stdClass();
+        $questions->error = $result['error'] ?? 'Unknown error occurred';
+        $questions->errorcode = $result['errorcode'] ?? 0;
         $questions->prompt = $story;
     }
     return $questions;
@@ -96,7 +80,7 @@ function local_aiquestions_get_questions($data) {
  * @param string $gift questions in GIFT format
  * @param int $numofquestions number of questions to generate
  * @param int $userid user id
- * @param bool $addidentifier add an GPT prefix to question names 
+ * @param bool $addidentifier add an GPT prefix to question names.
  * @return array of objects of created questions
  */
 function local_aiquestions_create_questions($courseid, $category, $gift, $numofquestions, $userid, $addidentifier) {
@@ -110,9 +94,9 @@ function local_aiquestions_create_questions($courseid, $category, $gift, $numofq
 
     $coursecontext = \context_course::instance($courseid);
 
-    // Get question category TODO: there is probably a better way to do this.
+    // Get question category TODO: MDL-12345 There is probably a better way to do this.
     if ($category) {
-        $categoryids = explode(',',$category);
+        $categoryids = explode(',', $category);
         $categoryid = $categoryids[0];
         $categorycontextid = $categoryids[1];
         $category = $DB->get_record('question_categories', ['id' => $categoryid, 'contextid' => $categorycontextid]);
@@ -155,7 +139,7 @@ function local_aiquestions_create_questions($courseid, $category, $gift, $numofq
         $q->questiontext = ['text' => "<p>" . $questiontext . "</p>"];
         $q->questiontextformat = 1;
         if ($addidentifier == 1) {
-            $q->name = "GPT-created: " . $q->name; // Adds a "watermark" to the question
+            $q->name = "GPT-created: " . $q->name; // Adds a "watermark" to the question.
         }
         $created = question_bank::get_qtype($qtype)->save_question($q, $q);
         $createdquestions[] = $created;
@@ -173,8 +157,8 @@ function local_aiquestions_create_questions($courseid, $category, $gift, $numofq
  * @return string result escaped json
  */
 function local_aiquestions_escape_json($value) {
-    $escapers = array("\\", "/", "\"", "\n", "\r", "\t", "\x08", "\x0c");
-    $replacements = array("\\\\", "\\/", "\\\"", "\\n", "\\r", "\\t", "\\f", "\\b");
+    $escapers = ["\\", "/", "\"", "\n", "\r", "\t", "\x08", "\x0c"];
+    $replacements = ["\\\\", "\\/", "\\\"", "\\n", "\\r", "\\t", "\\f", "\\b"];
     $result = str_replace($escapers, $replacements, $value);
     return $result;
 }

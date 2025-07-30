@@ -1,6 +1,11 @@
 # AI Text to questions generator #
 
-This plugin allows you to automatically create questions on a given text using OpenAI ChatGPT. It requires an OpenAI API Key.
+This plugin allows you to automatically create questions on a given text using AI providers through Moodle's built-in AI subsystem. It supports various AI providers including OpenAI, Azure AI, and others configured through Moodle's AI management interface.
+
+## Requirements ##
+
+- Moodle 4.5 or higher (required for AI subsystem support)
+- At least one AI provider configured in Moodle's AI subsystem
 
 ## Installing via uploaded ZIP file ##
 
@@ -24,6 +29,20 @@ Alternatively, you can run
     $ php admin/cli/upgrade.php
 
 to complete the installation from the command line.
+
+## Configuration ##
+
+### AI Provider Setup ###
+
+1. Go to _Site administration > Plugins > AI > AI subsystem management_
+2. Configure your preferred AI provider (OpenAI, Azure AI, etc.)
+3. Ensure the AI provider is enabled and properly configured with API keys
+
+### Plugin Settings ###
+
+1. Go to _Site administration > Plugins > Local plugins > AI text to questions generator_
+2. Configure the number of tries and presets as needed
+3. The AI provider configuration is handled centrally through Moodle's AI subsystem
 
 ## Usage
 

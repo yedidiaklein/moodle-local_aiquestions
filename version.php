@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_aiquestions';
-$plugin->release = '1.0';
-$plugin->version = 202311230001;
-$plugin->requires = 2022041900;
+$plugin->release = '2.0';
+$plugin->version = 2025073000;
+$plugin->requires = 2024100700; // Requires Moodle 4.5 or later for AI subsystem.
 $plugin->maturity = MATURITY_STABLE;

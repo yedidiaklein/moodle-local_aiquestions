@@ -28,46 +28,11 @@ defined('MOODLE_INTERNAL') || die();
 if ($hassiteconfig) {
     $settings = new admin_settingpage('local_aiquestions_settings', new lang_string('pluginname', 'local_aiquestions'));
 
-    // Language model provider.
-    $provideroptions = ['OpenAI' => 'OpenAI',
-                'Azure' => 'Azure'
-                ];
-    $settings->add( new admin_setting_configselect(
-        'local_aiquestions/provider',
-        get_string('provider', 'local_aiquestions'),
-        get_string('providerdesc', 'local_aiquestions'),
-        'OpenAI',
-        $provideroptions,
-    ));
-
-    // Azure endpoint.
-
-    $settings->add(new admin_setting_configtext(
-    'local_aiquestions/azure_api_endpoint',
-    get_string('azureapiendpoint', 'local_aiquestions'),
-    get_string('azureapiendpointdesc', 'local_aiquestions'),
-    '', PARAM_URL
-    ));
-
-
-    // OpenAI key.
-    $settings->add( new admin_setting_configpasswordunmask(
-        'local_aiquestions/key',
-        get_string('openaikey', 'local_aiquestions'),
-        get_string('openaikeydesc', 'local_aiquestions'),
-        '', PARAM_TEXT, 50
-    ));
-
-    // Model.
-    $options = ['gpt-3.5-turbo' => 'gpt-3.5-turbo',
-                'gpt-4' => 'gpt-4'
-                ];
-    $settings->add( new admin_setting_configselect(
-        'local_aiquestions/model',
-        get_string('model', 'local_aiquestions'),
-        get_string('openaikeydesc', 'local_aiquestions'),
-        'gpt-3.5-turbo',
-        $options,
+    // Add info about using Moodle's AI settings.
+    $settings->add(new admin_setting_description(
+        'local_aiquestions/aiinfo',
+        get_string('aisettingsheader', 'local_aiquestions'),
+        get_string('aisettingsdesc', 'local_aiquestions')
     ));
 
     // Number of tries.
@@ -78,7 +43,7 @@ if ($hassiteconfig) {
         10, PARAM_INT, 10
     ));
 
-    // Presets
+    // Presets.
     $settings->add( new admin_setting_heading(
         'local_aiquestions/presets',
         get_string('presets', 'local_aiquestions'),
@@ -136,6 +101,6 @@ if ($hassiteconfig) {
 
     // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
     if ($ADMIN->fulltree) {
-        // TODO: Define actual plugin settings page and add it to the tree - {@link https://docs.moodle.org/dev/Admin_settings}.
+        // TODO: MDL-12345 Define actual plugin settings page and add it to the tree - {@link https://docs.moodle.org/dev/Admin_settings}.
     }
 }
