@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['addidentifier'] = 'הוסף קידומת "GPT-created: " לשם השאלה';
+$string['addidentifier'] = 'הוסף קידומת "AI-created: " לשם השאלה';
 $string['aiquestions'] = 'שאלות AI';
 $string['aisettingsdesc'] = 'התוסף הזה משתמש כעת בתת-מערכת ה-AI המובנית של Moodle. להגדרת ספקי AI (OpenAI, Azure וכו\'), עבור אל ניהול אתר > תוספים > AI > ניהול תת-מערכת AI. הגדרות ספק ה-AI הועברו לשם לניהול מרכזי של כל התוספים התומכים ב-AI.';
 $string['aisettingsheader'] = 'תצורת AI';
@@ -42,7 +42,7 @@ $string['cronoverdue'] = 'נראה שהמשימה cron אינה פועלת,
 ראה <a href="https://docs.moodle.org/en/Cron#Setting_up_cron_on_your_system">
 https://docs.moodle.org/en/Cron#Setting_up_cron_on_your_system
 </a> לקבלת מידע נוסף.';
-$string['editpreset'] = 'ערוך את הפרה-הרשאה לפני השליחה ל-AI';
+$string['editpreset'] = 'ערוך את ההגדרות היצירה לפני השליחה ל-AI';
 $string['errornotcreated'] = 'שגיאה : השאלות לא נוצרו';
 $string['example'] = 'דוגמה';
 $string['example_help'] = 'הדוגמה מציגה ל-AI פלט לדוגמה כדי להבהיר את הפורמט.';
@@ -59,6 +59,7 @@ $string['languagedesc'] = 'נא לבחור כאן את השפה שבה ברצו�
 יש לשים לב שישנן שפות שנתמכות פחות מאחרות על ידי ChatGPT.';
 $string['model'] = 'דגם';
 $string['model_desc'] = 'דגם שפה לשימוש. <a href="https://platform.openai.com/docs/models/">מידע נוסף</a>.';
+$string['nopdfselected'] = 'לא נבחר קובץ';
 $string['numofquestions'] = 'מספר השאלות';
 $string['numofquestionsdesc'] = 'נא לבחור כאן את מספר השאלות שברצונך ליצור.';
 $string['numoftries'] = '<b>{$a}</b> ניסיונות';
@@ -70,6 +71,8 @@ $string['openaikeydesc'] = 'נא להקליד כאן את מפתח ה- API של 
 יש לבחור בכפתור "+ Create New Secret Key" ולהעתיק את המפתח לשדה זה.<br>
 יש לציין שנדרש חשבון של OpenAI שכולל הגדרות חיוב כדי לקבל מפתח API.';
 $string['outof'] = 'מתוך';
+$string['pdf'] = 'קובץ לשימוש';
+$string['pdf_help'] = 'בחר קובץ מהקורס כדי לחלץ ממנו את הטקסט. אם תבחר קובץ, הוא יחליף את הטקסט לעיל.';
 $string['personalprompt'] = 'הנחיה אישית';
 $string['personalpromptdesc'] = 'נא להקליד כאן את ההנחיה האישית שלך.<br>
 ההנחיה היא ההסבר ל-ChatGPT כיצד ליצור את השאלות.<br>
@@ -77,18 +80,18 @@ $string['personalpromptdesc'] = 'נא להקליד כאן את ההנחיה הא
 $string['pluginname'] = 'מחולל שאלות טקסט לשאלות באמצעות AI';
 $string['pluginname_desc'] = 'תוסף זה מאפשר לך ליצור שאלות מתוך טקסט.';
 $string['pluginname_help'] = 'השתמש בתוסף זה מתפריט הניהול של הקורס.';
-$string['preset'] = 'פרה-הרשאה';
-$string['presetexample'] = 'דוגמה לפרה-הרשאה';
+$string['preset'] = 'הגדרות היצירה';
+$string['presetexample'] = 'דוגמה להגדרות היצירה';
 $string['presetexampledefault1'] = '';
 $string['presetexampledefault10'] = '';
-$string['presetinstructions'] = 'הוראות פרה-הרשאה';
+$string['presetinstructions'] = 'הוראות הגדרות היצירה';
 $string['presetinstructionsdefault1'] = '';
 $string['presetinstructionsdefault10'] = '';
-$string['presetname'] = 'שם הפרה-הרשאה';
+$string['presetname'] = 'שם ההגדרות היצירה';
 $string['presetnamedefault1'] = '';
 $string['presetnamedefault10'] = '';
 $string['presetnamedesc'] = 'השם שיוצג למשתמש';
-$string['presetprimer'] = 'פרימר לפרה-הרשאה';
+$string['presetprimer'] = 'פרימר להגדרות היצירה';
 $string['presetprimerdefault1'] = '';
 $string['presetprimerdefault10'] = '';
 $string['presets'] = 'פרה-הרשאות';

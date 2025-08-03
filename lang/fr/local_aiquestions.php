@@ -45,6 +45,7 @@ $string['gotoquestionbank'] = 'Accéder à la banque de questions';
 $string['language'] = 'Langue';
 $string['languagedesc'] = 'Veuillez sélectionner ici la langue que vous souhaitez utiliser pour la génération des questions.<br>
 Notez que certaines langues sont moins bien prises en charge que d\'autres sur ChatGPT.';
+$string['nopdfselected'] = 'Aucun fichier sélectionné';
 $string['numofquestions'] = 'Nombre de questions';
 $string['numofquestionsdesc'] = 'Veuillez sélectionner ici le nombre de questions que vous souhaitez générer.';
 $string['numoftries'] = '<b>{$a}</b> tentatives.';
@@ -60,6 +61,8 @@ $string['personalprompt'] = 'Instruction personnelle';
 $string['personalpromptdesc'] = "Veuillez saisir ici votre instruction personnelle.
 L'instruction est l'explication donnée à ChatGPT sur la manière de générer les questions.
 <br> Vous devez inclure ces deux paramètres : {{numofquestions}} et {{language}}.";
+$string['pdf'] = 'Fichier à utiliser';
+$string['pdf_help'] = 'Sélectionnez un fichier dans le cours à partir duquel extraire le texte. Si vous sélectionnez un fichier, il remplacera le texte au-dessus.';
 $string['pluginname'] = 'Générateur de questions à partir de texte en IA';
 $string['pluginname_desc'] = 'Ce plugin vous permet de générer des questions à partir d\'un texte.';
 $string['pluginname_help'] = 'Utilisez ce plugin depuis le menu d\'administration du cours.';
@@ -70,7 +73,7 @@ $string['storydesc'] = 'Veuillez saisir ici votre texte.';
 $string['tasksuccess'] = 'La tâche de génération des questions a été créée avec succès.';
 $string['usepersonalprompt'] = 'Utiliser une instruction personnelle';
 $string['usepersonalpromptdesc'] = 'Veuillez sélectionner ici si vous souhaitez utiliser une instruction personnelle.';
-$string['addidentifier'] = 'Ajouter le préfixe “GPT-created : ” au nom de la question';
+$string['addidentifier'] = 'Ajouter le préfixe “AI-created : ” au nom de la question';
 $string['aisettingsdesc'] = 'Ce plugin utilise désormais le sous-système IA intégré de Moodle. Pour configurer les fournisseurs d\'IA (OpenAI, Azure, etc.), allez dans Administration du site > Plugins > IA > Gestion du sous-système IA. Les paramètres des fournisseurs d\'IA ont été déplacés là pour une gestion centralisée de tous les plugins compatibles IA.';
 $string['aisettingsheader'] = 'Configuration IA';
 $string['azureapiendpoint'] = 'Point de terminaison de l\'API Azure';

@@ -15,17 +15,27 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * CLI utility to check cron state.
  *
  * @package     local_aiquestions
+ * @category    admin
  * @copyright   2023 Ruthy Salomon <ruthy.salomon@gmail.com> , Yedidia Klein <yedidia@openapp.co.il>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+define('CLI_SCRIPT', true);
 
-$plugin->component = 'local_aiquestions';
-$plugin->release = '2.1';
-$plugin->version = 2025080300;
-$plugin->requires = 2024100700; // Requires Moodle 4.5 or later for AI subsystem.
-$plugin->maturity = MATURITY_STABLE;
+require(__DIR__ . '/../../../config.php');
+require_once(__DIR__ . '/../locallib.php');
+
+$fileid = 565; // Example file ID, replace with actual file ID.
+
+echo "Extracting text from PDF file with ID: $fileid\n";
+
+// Extract text from the PDF file.
+try {
+    $text = extract_pdf_text($fileid);
+    echo "Extracted text:\n$text\n";
+} catch (Exception $e) {
+    echo "Error extracting text: " . $e->getMessage() . "\n";
+}

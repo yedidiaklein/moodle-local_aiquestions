@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['addidentifier'] = 'Add a "GPT-created: " prefix to the question name';
+$string['addidentifier'] = 'Add a "AI-created: " prefix to the question name';
 $string['aiquestions'] = 'AI Questions';
 $string['aisettingsdesc'] = 'This plugin now uses Moodle\'s built-in AI subsystem. To configure AI providers (OpenAI, Azure, etc.), please go to Site administration > Plugins > AI > AI subsystem management. The AI provider settings have been moved there for centralized management across all AI-enabled plugins.';
 $string['aisettingsheader'] = 'AI Configuration';
@@ -56,6 +56,7 @@ $string['instructions'] = 'Instructions';
 $string['instructions_help'] = 'The instructions tell the AI what to do.';
 $string['model'] = 'Model';
 $string['model_desc'] = 'Language model to use. <a href="https://platform.openai.com/docs/models/">More info</a>.';
+$string['nopdfselected'] = 'No file selected';
 $string['numofquestions'] = 'Number of questions to generate';
 $string['numoftries'] = '<b>{$a}</b> tries';
 $string['numoftriesdesc'] = 'Number of tries to send to OpenAI';
@@ -65,6 +66,8 @@ $string['openaikeydesc'] = 'You can get an OpenAI API key from <a href="https://
 Select the "+ Create New Secret Key" button and copy the key to this field.<br>
 Note that you need to have an OpenAI account that includes billing settings to get an API key.';
 $string['outof'] = 'out of';
+$string['pdf'] = 'File to use';
+$string['pdf_help'] = 'Select a file from the course to extract the text from. If you select a file, it will override the text above.';
 $string['pluginname'] = 'AI text to questions generator';
 $string['pluginname_desc'] = 'This plugin allows you to automatically generate questions from a text using a language AI (eg chatGPT).';
 $string['pluginname_help'] = 'Use this plugin from the course administration menu or the question bank.';

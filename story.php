@@ -59,6 +59,11 @@ $mform = new local_aiquestions_story_form();
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot . '/course/view.php?id=' . $courseid);
 } else if ($data = $mform->get_data()) {
+    // If there is a pdf selected, load the story from the PDF.
+    if ($data->pdf) {
+        // If a PDF is selected, load the story from the PDF.
+        $data->story = extract_pdf_text($data->pdf);
+    }
 
     // Call the adhoc task.
     $task = new \local_aiquestions\task\questions();

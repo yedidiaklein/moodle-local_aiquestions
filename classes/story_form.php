@@ -43,13 +43,13 @@ class local_aiquestions_story_form extends moodleform {
         // Question category.
         $contexts = [context_course::instance($courseid)];
         $mform->addElement('questioncategory', 'category', get_string('category', 'question'),
-            array('contexts'=>$contexts));
+            ['contexts' => $contexts]);
         $mform->addHelpButton('category', 'category', 'local_aiquestions');
 
         // Number of questions.
         $defaultnumofquestions = 4;
         $select = $mform->addElement('select', 'numofquestions', get_string('numofquestions', 'local_aiquestions'),
-            array('1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9, '10' => 10));
+            ['1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9, '10' => 10]);
         $select->setSelected($defaultnumofquestions);
         $mform->setType('numofquestions', PARAM_INT);
 
@@ -59,13 +59,19 @@ class local_aiquestions_story_form extends moodleform {
         $mform->setType('story', PARAM_RAW);
         $mform->addHelpButton('story', 'story', 'local_aiquestions');
 
-        // Add "GPT-created" to question name.
+        // File (pdf) from course.
+        $pdfoptions = $this->get_course_pdfs($courseid);
+        $mform->addElement('select', 'pdf', get_string('pdf', 'local_aiquestions'), $pdfoptions);
+        $mform->setType('pdf', PARAM_INT);
+        $mform->addHelpButton('pdf', 'pdf', 'local_aiquestions');
+
+        // Add "AI-created" to question name.
         $mform->addElement('checkbox', 'addidentifier', get_string('addidentifier', 'local_aiquestions'));
         $mform->setDefault('addidentifier', 1); // Default of "yes"
         $mform->setType('addidentifier', PARAM_BOOL);
 
         // Preset.
-        $presets = array();
+        $presets = [];
         for ($i = 0; $i < 10; $i++) {
             if ($presetname = get_config('local_aiquestions', 'presetname' . $i)) {
                 $presets[] = $presetname;
@@ -115,11 +121,75 @@ class local_aiquestions_story_form extends moodleform {
         $mform->addElement('hidden', 'courseid', $courseid);
         $mform->setType('courseid', PARAM_INT);
 
-        $buttonarray = array();
+        $buttonarray = [];
         $buttonarray[] =& $mform->createElement('submit', 'submitbutton', get_string('generate', 'local_aiquestions'));
         $buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('backtocourse', 'local_aiquestions'));
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
     }
+
+    /**
+     * Get PDF resources from the course
+     *
+     * @param int $courseid Course ID
+     * @return array Array of PDF options for dropdown
+     */
+    private function get_course_pdfs($courseid) {
+        global $DB;
+
+        // Get all resource modules in the course that have a PDF file.
+        $sql = "SELECT r.id, r.name, f.filename, f.contenthash, f.id as fileid
+                FROM {resource} r
+                JOIN {course_modules} cm ON cm.instance = r.id
+                JOIN {modules} m ON m.id = cm.module
+                JOIN {context} ctx ON ctx.instanceid = cm.id
+                JOIN {files} f ON f.contextid = ctx.id
+                WHERE cm.course = :courseid
+                AND m.name = 'resource'
+                AND f.component = 'mod_resource'
+                AND f.filearea = 'content'
+                AND f.filename != '.'
+                AND LOWER(f.filename) LIKE '%.pdf'
+                AND ctx.contextlevel = 70
+                ORDER BY r.name, f.filename";
+
+        $resources = $DB->get_records_sql($sql, ['courseid' => $courseid]);
+
+        // Get all securepdf modules in the course that have a PDF file.
+        $sql = "SELECT r.id, r.name, f.filename, f.contenthash, f.id as fileid
+                FROM {securepdf} r
+                JOIN {course_modules} cm ON cm.instance = r.id
+                JOIN {modules} m ON m.id = cm.module
+                JOIN {context} ctx ON ctx.instanceid = cm.id
+                JOIN {files} f ON f.contextid = ctx.id
+                WHERE cm.course = :courseid
+                AND m.name = 'securepdf'
+                AND f.component = 'mod_securepdf'
+                AND f.filearea = 'content'
+                AND f.filename != '.'
+                AND LOWER(f.filename) LIKE '%.pdf'
+                AND ctx.contextlevel = 70
+                ORDER BY r.name, f.filename";
+
+        $resources = array_merge($resources, $DB->get_records_sql($sql, ['courseid' => $courseid]));
+
+        foreach ($resources as $resource) {
+            $pdfoptions[$resource->fileid] = $resource->name . ' (' . $resource->filename . ')';
+        }
+        // Sort the options by name.
+        asort($pdfoptions);
+
+        // Add a default option for no PDF selected before all other options.
+        // This ensures that the user sees a clear option to select a PDF.
+        if (empty($pdfoptions)) {
+            $pdfoptions[0] = get_string('nopdfselected', 'local_aiquestions');
+        } else {
+            $pdfoptions = [0 => get_string('nopdfselected', 'local_aiquestions')] + $pdfoptions;
+        }
+
+        return $pdfoptions;
+    }
+
+
     /**
      * Form validation
      *
@@ -128,6 +198,6 @@ class local_aiquestions_story_form extends moodleform {
      * @return array
      */
     public function validation($data, $files) {
-        return array();
+        return [];
     }
 }

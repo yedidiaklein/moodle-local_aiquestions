@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <url>https://github.com/smalot/pdfparser</url>
+        <location>smalot_pdfparser</location>
+        <name>Smalot PDF Parser</name>
+        <version>N/A</version>
+        <license>GPL</license>
+        <licenseversion>3</licenseversion>
+    </library>
+</libraries>

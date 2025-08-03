@@ -139,7 +139,7 @@ function local_aiquestions_create_questions($courseid, $category, $gift, $numofq
         $q->questiontext = ['text' => "<p>" . $questiontext . "</p>"];
         $q->questiontextformat = 1;
         if ($addidentifier == 1) {
-            $q->name = "GPT-created: " . $q->name; // Adds a "watermark" to the question.
+            $q->name = "AI-created: " . $q->name; // Adds a "watermark" to the question.
         }
         $created = question_bank::get_qtype($qtype)->save_question($q, $q);
         $createdquestions[] = $created;
@@ -200,4 +200,55 @@ function local_aiquestions_check_gift($gift) {
     }
     return true;
 }
+
+/**
+ * Extract text from a PDF file using the file ID
+ *
+ * @param int $fileid File ID from the files table
+ * @return string Extracted text or empty string if extraction fails
+ */
+function extract_pdf_text($fileid) {
+    global $DB, $CFG;
+
+    try {
+        // Get file information.
+        $file = $DB->get_record('files', ['id' => $fileid], '*', MUST_EXIST);
+
+        // Get the file storage.
+        $fs = get_file_storage();
+        $storedfile = $fs->get_file_by_id($fileid);
+
+        if (!$storedfile) {
+            return '';
+        }
+
+        // Create a temporary file to work with.
+        $tempfile = tempnam($CFG->dataroot . '/temp/', 'moodle_pdf_');
+        $storedfile->copy_content_to($tempfile);
+
+        // Include the PDF parser.
+        require_once($CFG->dirroot . '/local/aiquestions/smalot_pdfparser/alt_autoload.php');
+
+        $parser = new \Smalot\PdfParser\Parser();
+        $pdf = $parser->parseFile($tempfile);
+        $text = $pdf->getText();
+
+        // Clean up the temporary file.
+        unlink($tempfile);
+
+        // Clean up the text (remove excessive whitespace, normalize line breaks).
+        $text = preg_replace('/\s+/', ' ', $text);
+        $text = trim($text);
+
+        // Remove utf8 special characters.
+        $text = preg_replace('/[^\x20-\x7E]/', '', $text);
+        return $text;
+
+    } catch (Exception $e) {
+        // Log the error for debugging.
+        debugging('PDF extraction failed: ' . $e->getMessage(), DEBUG_DEVELOPER);
+        return '';
+    }
+}
+
 
