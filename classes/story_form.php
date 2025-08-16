@@ -180,14 +180,13 @@ class local_aiquestions_story_form extends moodleform {
         foreach ($resources as $resource) {
             $pdfoptions[$resource->fileid] = $resource->name . ' (' . $resource->filename . ')';
         }
-        // Sort the options by name.
-        asort($pdfoptions);
 
         // Add a default option for no PDF selected before all other options.
         // This ensures that the user sees a clear option to select a PDF.
         if (empty($pdfoptions)) {
             $pdfoptions[0] = get_string('nopdfselected', 'local_aiquestions');
         } else {
+            asort($pdfoptions);
             $pdfoptions = [0 => get_string('nopdfselected', 'local_aiquestions')] + $pdfoptions;
         }
 
