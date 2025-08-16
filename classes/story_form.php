@@ -154,8 +154,12 @@ class local_aiquestions_story_form extends moodleform {
 
         $resources = $DB->get_records_sql($sql, ['courseid' => $courseid]);
 
-        // Get all securepdf modules in the course that have a PDF file.
-        $sql = "SELECT r.id, r.name, f.filename, f.contenthash, f.id as fileid
+        // Check if mod_securepdf is installed and enabled.
+        $pluginmanager = \core_plugin_manager::instance();
+        $securepdfinfo = $pluginmanager->get_plugin_info('mod_securepdf');
+        if ($securepdfinfo && ($securepdfinfo->is_enabled())) {
+            // Get all securepdf modules in the course that have a PDF file.
+            $sql = "SELECT r.id, r.name, f.filename, f.contenthash, f.id as fileid
                 FROM {securepdf} r
                 JOIN {course_modules} cm ON cm.instance = r.id
                 JOIN {modules} m ON m.id = cm.module
@@ -170,7 +174,8 @@ class local_aiquestions_story_form extends moodleform {
                 AND ctx.contextlevel = 70
                 ORDER BY r.name, f.filename";
 
-        $resources = array_merge($resources, $DB->get_records_sql($sql, ['courseid' => $courseid]));
+            $resources = array_merge($resources, $DB->get_records_sql($sql, ['courseid' => $courseid]));
+        }
 
         foreach ($resources as $resource) {
             $pdfoptions[$resource->fileid] = $resource->name . ' (' . $resource->filename . ')';

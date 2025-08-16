@@ -51,6 +51,7 @@ $string['generatemore'] = 'יצירת שאלות נוספות';
 $string['generating'] = 'יוצר את השאלות שלך... (ניתן לעזוב דף זה, ולבדוק מאוחר יותר בבנק השאלות)';
 $string['generationfailed'] = 'נכשל ביצירת השאלות לאחר {$a} ניסיונות';
 $string['generationtries'] = 'מספר הניסיונות שנשלחו ל- OpenAI: <b>{$a}</b>';
+$string['generationtriesfull'] = 'מספר הניסיונות שנשלחו ל- OpenAI: <b>{$a->tries}</b> מתוך <b>{$a->numoftries}</b>';
 $string['gotoquestionbank'] = 'עברו לבנק השאלות';
 $string['instructions'] = 'הוראות';
 $string['instructions_help'] = 'ההוראות אומרות ל-AI מה לעשות.';
